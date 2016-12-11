@@ -14,8 +14,6 @@
     if (!url) {
       error('No url specified');
     }
-
-    console.log(url, depth, format);
   }
 
   module.exports = {

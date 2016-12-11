@@ -51,8 +51,6 @@
 
   var command = argv._[0];
 
-  console.log(argv);
-
   if (typeof krawala[command] !== 'function') {
     error('Unknown command: ' + command);
   } else {
