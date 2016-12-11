@@ -32,14 +32,30 @@
           var html = res.text;
           var $ = cheerio.load(html);
 
+          var links = _.chain($('a[href]').toArray().map(function (el) {
+            var element = $(el);
+
+            return element.attr('href');
+          }))
+          .groupBy(_.identity)
+          .map(function (values, key) {
+            return {
+              url: key,
+              number: values.length
+            };
+          })
+          .sortBy('url')
+          .value()
+
           json[url] = {
             title: $('title').text(),
             charset: $('meta[charset]').attr('charset') || null,
-            meta: _.object($('meta[name]').toArray().map(function(el) {
+            meta: _.object($('meta[name]').toArray().map(function (el) {
               var element = $(el);
 
               return [element.attr('name'), element.attr('content')];
-            }))
+            })),
+            links: links
           };
 
           if (urls.length) {
