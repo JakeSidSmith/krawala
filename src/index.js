@@ -52,7 +52,7 @@
           })
           .sortBy('url')
           .groupBy(function (link) {
-            var linkDomain = parseDomain(link.url);
+            var linkDomain = parseDomain(link.url.replace(/^\/\/(\w)/, '$1'));
 
             if (!linkDomain) {
               return 'unknown';
