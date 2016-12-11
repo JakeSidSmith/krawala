@@ -82,10 +82,10 @@
           json[url] = {
             title: $('title').text() || null,
             charset: $('meta[charset]').attr('charset') || null,
-            meta: _.object($('meta[name]').toArray().map(function (el) {
+            meta: _.object($('meta[name],meta[property]').toArray().map(function (el) {
               var element = $(el);
 
-              return [element.attr('name'), element.attr('content')];
+              return [element.attr('name') || element.attr('property'), element.attr('content')];
             })),
             links: {
               internal: links.internal || [],
