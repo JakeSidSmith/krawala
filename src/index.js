@@ -57,13 +57,13 @@
 
     return {
       title: $('title').text() || null,
+      wordCount: wordCount($('body').text()),
       charset: $('meta[charset]').attr('charset') || null,
       meta: _.object($('meta[name],meta[property]').toArray().map(function (el) {
         var element = $(el);
 
         return [element.attr('name') || element.attr('property'), element.attr('content')];
       })),
-      wordCount: wordCount($('body').text()),
       links: {
         internal: links.internal || [],
         external: links.external || [],
