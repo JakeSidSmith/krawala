@@ -1,0 +1,28 @@
+{
+  "name": "krawala",
+  "version": "0.0.0",
+  "description": "Simple javascript web-crawler with command line interface",
+  "main": "src/index.js",
+  "bin": {
+    "krawala": "src/cli.js"
+  },
+  "scripts": {
+    "test": "eslint -c node_modules/eslintrc/.easlintrc-es5 src/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JakeSidSmith/krawala.git"
+  },
+  "keywords": [
+    "web",
+    "crawler",
+    "json",
+    "site"
+  ],
+  "author": "Jake 'Sid' Smith",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/JakeSidSmith/krawala/issues"
+  },
+  "homepage": "https://github.com/JakeSidSmith/krawala#readme"
+}
