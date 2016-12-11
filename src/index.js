@@ -55,6 +55,10 @@
           })
           .sortBy('url')
           .groupBy(function (link) {
+            if (link.url.indexOf('#') === 0) {
+              return 'same-page';
+            }
+
             var linkDomain = parseDomain(link.url.replace(MATCHES_NO_PROTOCOL, ''));
 
             if (!linkDomain) {
@@ -78,6 +82,7 @@
             links: {
               internal: links.internal || [],
               external: links.external || [],
+              'same-page': links['same-page'] || [],
               unknown: links.unknown || []
             }
           };
