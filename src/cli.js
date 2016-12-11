@@ -41,7 +41,7 @@
   .alias('help', 'h')
   .version('version', 'Return the version number', version)
   .alias('version', 'v')
-  .demand(1)
+  .require(1)
   .strict()
   .argv;
 
