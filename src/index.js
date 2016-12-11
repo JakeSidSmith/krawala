@@ -41,7 +41,7 @@
           .map(function (values, key) {
             return {
               url: key,
-              number: values.length
+              references: values.length
             };
           })
           .sortBy('url')
