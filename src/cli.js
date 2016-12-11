@@ -17,7 +17,7 @@
     {
       group: 'crawl options:',
       alias : 'u',
-      demand : true,
+      required: true,
       type: 'string',
       describe: 'URL to crawl'
     }
