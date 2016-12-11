@@ -6,6 +6,7 @@
   var request = require('superagent');
   var cheerio = require('cheerio');
   var parseDomain = require('parse-domain');
+  var wordCount = require('word-count');
   var utils = require('./utils');
 
   var error = utils.error;
@@ -62,6 +63,7 @@
 
         return [element.attr('name') || element.attr('property'), element.attr('content')];
       })),
+      wordCount: wordCount($('body').text()),
       links: {
         internal: links.internal || [],
         external: links.external || [],
