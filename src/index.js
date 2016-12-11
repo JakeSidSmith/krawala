@@ -32,7 +32,7 @@
           var html = res.text;
           var $ = cheerio.load(html);
 
-          json.url = {
+          json[url] = {
             title: $('title').text(),
             charset: $('meta[charset]').attr('charset') || null,
             meta: _.object($('meta[name]').toArray().map(function(el) {
