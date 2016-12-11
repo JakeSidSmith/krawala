@@ -24,5 +24,8 @@
   "bugs": {
     "url": "https://github.com/JakeSidSmith/krawala/issues"
   },
-  "homepage": "https://github.com/JakeSidSmith/krawala#readme"
+  "homepage": "https://github.com/JakeSidSmith/krawala#readme",
+  "engines": {
+    "node": "6.9.1"
+  }
 }
