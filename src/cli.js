@@ -27,7 +27,8 @@
       alias : 'f',
       default : 'json',
       type: 'string',
-      describe: 'Format to return'
+      describe: 'Format to return',
+      choices: ['json']
     }
   )
   .help('help')
