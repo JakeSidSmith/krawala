@@ -59,6 +59,14 @@
               return 'same-page';
             }
 
+            if (link.url.indexOf('tel:') === 0) {
+              return 'phone';
+            }
+
+            if (link.url.indexOf('mailto:') === 0) {
+              return 'email';
+            }
+
             var linkDomain = parseDomain(link.url.replace(MATCHES_NO_PROTOCOL, ''));
 
             if (!linkDomain) {
@@ -83,6 +91,8 @@
               internal: links.internal || [],
               external: links.external || [],
               'same-page': links['same-page'] || [],
+              email: links.email || [],
+              phone: links.phone || [],
               unknown: links.unknown || []
             }
           };
