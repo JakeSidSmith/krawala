@@ -2,7 +2,9 @@
 
 (function () {
 
+  var _ = require('underscore');
   var request = require('superagent');
+  var cheerio = require('cheerio');
   var utils = require('./utils');
 
   var error = utils.error;
@@ -28,9 +30,16 @@
           error(err);
         } else {
           var html = res.text;
+          var $ = cheerio.load(html);
 
           json.url = {
-            body: res.text
+            title: $('title').text(),
+            charset: $('meta[charset]').attr('charset') || null,
+            meta: _.object($('meta[name]').toArray().map(function(el) {
+              var element = $(el);
+
+              return [element.attr('name'), element.attr('content')];
+            }))
           };
 
           if (urls.length) {
