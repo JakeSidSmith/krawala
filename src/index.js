@@ -63,7 +63,7 @@
           .value();
 
           json[url] = {
-            title: $('title').text(),
+            title: $('title').text() || null,
             charset: $('meta[charset]').attr('charset') || null,
             meta: _.object($('meta[name]').toArray().map(function (el) {
               var element = $(el);
