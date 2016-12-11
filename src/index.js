@@ -10,6 +10,7 @@
 
   var error = utils.error;
 
+  var MATCHES_NO_PROTOCOL = /^\/\//;
   var MATCHES_RELATIVE_URL = /\.?\//;
 
   function crawl(options, callback) {
@@ -54,7 +55,7 @@
           })
           .sortBy('url')
           .groupBy(function (link) {
-            var linkDomain = parseDomain(link.url.replace(/^\/\/(\w)/, '$1'));
+            var linkDomain = parseDomain(link.url.replace(MATCHES_NO_PROTOCOL, ''));
 
             if (!linkDomain) {
               var relativeUrl = MATCHES_RELATIVE_URL.exec(link.url);
