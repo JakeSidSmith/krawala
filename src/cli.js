@@ -21,6 +21,15 @@
       describe: 'Depth to crawl'
     }
   )
+  .option(
+    'format',
+    {
+      alias : 'f',
+      default : 'json',
+      type: 'string',
+      describe: 'Format to return'
+    }
+  )
   .help('help')
   .alias('help', 'h')
   .version('version', 'Return the version number', version)
