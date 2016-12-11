@@ -13,6 +13,15 @@
   .example('$0 crawl domain.com --depth 100', 'Crawl a domain to a depth of 100')
   .alias('crawl', 'c')
   .option(
+    'url',
+    {
+      alias : 'u',
+      demand : true,
+      type: 'string',
+      describe: 'URL to crawl'
+    }
+  )
+  .option(
     'depth',
     {
       alias : 'd',
