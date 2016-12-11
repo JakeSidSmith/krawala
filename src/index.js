@@ -10,6 +10,8 @@
 
   var error = utils.error;
 
+  var MATCHES_RELATIVE_URL = /\.?\//;
+
   function crawl(options, callback) {
     if (!options.url) {
       error('No url specified');
@@ -55,10 +57,12 @@
             var linkDomain = parseDomain(link.url.replace(/^\/\/(\w)/, '$1'));
 
             if (!linkDomain) {
-              return 'unknown';
+              var relativeUrl = MATCHES_RELATIVE_URL.exec(link.url);
+              return relativeUrl && relativeUrl.index === 0 ? 'internal' : 'unknown';
             }
 
-            return linkDomain.domain === baseDomain.domain && linkDomain.tld === baseDomain.tld ? 'internal' : 'external';
+            return linkDomain.domain === baseDomain.domain &&
+              linkDomain.tld === baseDomain.tld ? 'internal' : 'external';
           })
           .value();
 
