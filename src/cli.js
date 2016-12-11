@@ -15,6 +15,7 @@
   .option(
     'url',
     {
+      group: 'crawl options:',
       alias : 'u',
       demand : true,
       type: 'string',
@@ -24,6 +25,7 @@
   .option(
     'depth',
     {
+      group: 'crawl options:',
       alias : 'd',
       default : 10,
       type: 'number',
@@ -33,6 +35,7 @@
   .option(
     'format',
     {
+      group: 'crawl options:',
       alias : 'f',
       default : 'json',
       type: 'string',
