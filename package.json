@@ -7,7 +7,7 @@
     "krawala": "src/cli.js"
   },
   "scripts": {
-    "test": "eslint -c node_modules/eslintrc/.easlintrc-es5 src/"
+    "test": "eslint -c node_modules/eslintrc/.eslintrc-es5 src/"
   },
   "repository": {
     "type": "git",
@@ -27,5 +27,8 @@
   "homepage": "https://github.com/JakeSidSmith/krawala#readme",
   "engines": {
     "node": "6.9.1"
+  },
+  "devDependencies": {
+    "eslintrc": "JakeSidSmith/eslintrc.git#v0.0.2"
   }
 }
