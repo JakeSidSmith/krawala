@@ -5,20 +5,26 @@
   var _ = require('underscore');
   var request = require('superagent');
   var cheerio = require('cheerio');
+  var parseDomain = require('parse-domain');
   var utils = require('./utils');
 
   var error = utils.error;
 
   function crawl(options, callback) {
-    var json = {};
-    var depth = options.depth;
-    var format = options.format;
-
     if (!options.url) {
       error('No url specified');
     }
 
+    var baseDomain = parseDomain(options.url);
+
+    if (!baseDomain) {
+      error('Invalid domain');
+    }
+
     var urls = [options.url];
+    var json = {};
+    var depth = options.depth;
+    var format = options.format;
 
     function continueCrawl (url) {
       request
@@ -45,7 +51,16 @@
             };
           })
           .sortBy('url')
-          .value()
+          .groupBy(function (link) {
+            var linkDomain = parseDomain(link.url);
+
+            if (!linkDomain) {
+              return 'unknown';
+            }
+
+            return linkDomain.domain === baseDomain.domain && linkDomain.tld === baseDomain.tld ? 'internal' : 'external';
+          })
+          .value();
 
           json[url] = {
             title: $('title').text(),
@@ -55,7 +70,11 @@
 
               return [element.attr('name'), element.attr('content')];
             })),
-            links: links
+            links: {
+              internal: links.internal || [],
+              external: links.external || [],
+              unknown: links.unknown || []
+            }
           };
 
           if (urls.length) {
