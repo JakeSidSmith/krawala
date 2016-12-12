@@ -76,15 +76,14 @@
     .accept('text/html')
     .send()
     .end(function (err, res) {
+      scope.urlsCrawled.push(url);
+
       if (err) {
         scope.json[url] = {
           failed: true,
-          type: res.type,
-          statusCode: res.statusCode
+          statusCode: err.status
         };
       } else {
-        scope.urlsCrawled.push(url);
-
         if (res.type === 'text/html' && res.text) {
           scope.json[url] = getData(scope, res, url);
 
