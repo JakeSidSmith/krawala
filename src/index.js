@@ -77,8 +77,17 @@
       if (err) {
         error(err);
       } else {
+        scope.urlsCrawled.push(url);
+
         if (res.type === 'text/html' && res.text && !(url in scope.json)) {
           scope.json[url] = getData(scope, res.text, url);
+
+          _.each(scope.json[url].links.internal, function (link) {
+            if (scope.urlsToCrawl.indexOf(link.resolved) < 0 && scope.urlsCrawled.indexOf(link.resolved) < 0) {
+              scope.urlsToCrawl.push(link.resolved);
+              continueCrawl(scope, link.resolved);
+            }
+          });
         }
 
         // if (urls.length && currentDepth < depth) {
@@ -88,10 +97,17 @@
         //     continueCrawl(childUrl, url, currentDepth + 1);
         //   }
         // }
-        if (typeof process === 'object') {
-          process.stdout.write(JSON.stringify(scope.json, null, 2) + '\n'); // eslint-disable-line no-undef
-        } else if (typeof scope.callback === 'function') {
-          scope.callback(JSON.stringify(scope.json, null, 2) + '\n');
+
+        if (scope.urlsToCrawl.length === scope.urlsCrawled.length) {
+          var totalUrlsCrawled = _.size(scope.json);
+
+          scope.json.totalUrlsCrawled = totalUrlsCrawled;
+
+          if (typeof process === 'object') {
+            process.stdout.write(JSON.stringify(scope.json, null, 2) + '\n'); // eslint-disable-line no-undef
+          } else if (typeof scope.callback === 'function') {
+            scope.callback(JSON.stringify(scope.json, null, 2) + '\n');
+          }
         }
       }
     });
