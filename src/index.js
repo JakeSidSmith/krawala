@@ -5,18 +5,16 @@
   var _ = require('underscore');
   var request = require('superagent');
   var cheerio = require('cheerio');
-  var parseDomain = require('parse-domain');
   var wordCount = require('word-count');
+
   var utils = require('./utils');
 
   var error = utils.error;
+  var isSameDomain = utils.isSameDomain;
+  var resolveUrl = utils.resolveUrl;
+  var isValidBaseUrl = utils.isValidBaseUrl;
 
-  var MATCHES_NO_PROTOCOL = /^\/\//;
-  var MATCHES_RELATIVE_URL = /^\.?\//;
-
-  var baseDomain, urls, json, depth, format, callback;
-
-  function getData (html) {
+  function getData (scope, html, parentUrl) {
     var $ = cheerio.load(html);
 
     var links = _.chain($('a[href]').toArray().map(function (el) {
@@ -28,6 +26,7 @@
     .map(function (values, key) {
       return {
         url: key,
+        resolved: resolveUrl(key, parentUrl),
         references: values.length
       };
     })
@@ -45,21 +44,9 @@
         return 'email';
       }
 
-      var linkDomain = parseDomain(link.url.replace(MATCHES_NO_PROTOCOL, ''));
-
-      if (!linkDomain) {
-        var relativeUrl = MATCHES_RELATIVE_URL.exec(link.url);
-        return relativeUrl && relativeUrl.index === 0 ? 'internal' : 'unknown';
-      }
-
-      return linkDomain.domain === baseDomain.domain &&
-        linkDomain.tld === baseDomain.tld ? 'internal' : 'external';
+      return isSameDomain(link.url, scope.baseUrl.resolved) ? 'internal' : 'external';
     })
     .value();
-
-    _.each(links.internal, function (link) {
-      urls.push(link.url);
-    });
 
     return {
       title: $('title').text() || null,
@@ -81,12 +68,7 @@
     };
   }
 
-  function continueCrawl (url, parentUrl, currentDepth) {
-    if (MATCHES_RELATIVE_URL.test(url)) {
-      url = parentUrl + url;
-    }
-
-
+  function continueCrawl (scope, url) {
     request
     .get(url)
     .accept('text/html')
@@ -95,42 +77,45 @@
       if (err) {
         error(err);
       } else {
-        if (res.type === 'text/html' && res.text && !(url in json)) {
-          json[url] = getData(res.text);
+        if (res.type === 'text/html' && res.text && !(url in scope.json)) {
+          scope.json[url] = getData(scope, res.text, url);
         }
 
-        if (urls.length && currentDepth < depth) {
-          while (urls.length) {
-            continueCrawl(urls.shift(), url, currentDepth + 1);
-          }
-        } else if (typeof process === 'object') {
-          process.stdout.write(JSON.stringify(json, null, 2) + '\n'); // eslint-disable-line no-undef
-        } else if (typeof callback === 'function') {
-          callback(JSON.stringify(json, null, 2) + '\n');
+        // if (urls.length && currentDepth < depth) {
+        //   while (urls.length) {
+        //     var childUrl = urls.shift();
+        //
+        //     continueCrawl(childUrl, url, currentDepth + 1);
+        //   }
+        // }
+        if (typeof process === 'object') {
+          process.stdout.write(JSON.stringify(scope.json, null, 2) + '\n'); // eslint-disable-line no-undef
+        } else if (typeof scope.callback === 'function') {
+          scope.callback(JSON.stringify(scope.json, null, 2) + '\n');
         }
       }
     });
   }
 
-  function crawl (options, inputCallback) {
-    if (!options.url) {
-      error('No url specified');
-    }
+  function crawl (options, callback) {
+    isValidBaseUrl(options.url);
 
-    baseDomain = parseDomain(options.url);
+    var scope = {
+      json: {},
+      currentDepth: 0,
+      baseUrl: {
+        url: options.url,
+        resolved: resolveUrl(options.url)
+      },
+      urlsToCrawl: [options.url],
+      urlsCrawled: [],
+      depth: options.depth,
+      format: options.format,
 
-    if (!baseDomain) {
-      error('Invalid domain');
-    }
+      callback: callback
+    };
 
-    urls = [options.url];
-    json = {};
-    depth = options.depth;
-    format = options.format;
-
-    callback = inputCallback;
-
-    continueCrawl(urls.shift(), '', 0);
+    continueCrawl(scope, scope.urlsToCrawl[0]);
 
   }
 
