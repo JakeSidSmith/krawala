@@ -27,8 +27,7 @@
       return {
         url: key,
         resolved: resolveUrl(key, parentUrl),
-        references: values.length,
-        crawled: false
+        references: values.length
       };
     })
     .sortBy('url')
@@ -50,6 +49,7 @@
     .value();
 
     return {
+      failed: false,
       type: res.type,
       statusCode: res.statusCode,
       title: $('title').text() || null,
@@ -79,6 +79,7 @@
     .end(function (err, res) {
       if (err) {
         scope.json[url] = {
+          failed: true,
           type: res.type,
           statusCode: res.statusCode
         };
@@ -98,6 +99,7 @@
           }
         } else {
           scope.json[url] = {
+            failed: false,
             type: res.type,
             statusCode: res.statusCode
           };
@@ -105,20 +107,27 @@
 
         if (scope.urlsToCrawl.length === scope.urlsCrawled.length) {
           var totalUrlsCrawled = _.size(scope.json);
+          var totalFailedUrls = _.chain(scope.json).filter(function (crawledUrl) {
+            return crawledUrl.failed;
+          }).size().value();
 
           _.each(scope.json, function (crawledUrl, key) {
             if (crawledUrl.links) {
               _.each(crawledUrl.links.internal, function (link, index) {
                 if (link.resolved in scope.json) {
                   scope.json[key].links.internal[index].crawled = true;
+                  scope.json[key].links.internal[index].failed = scope.json[link.resolved].failed;
                   scope.json[key].links.internal[index].type = scope.json[link.resolved].type;
                   scope.json[key].links.internal[index].statusCode = scope.json[link.resolved].statusCode;
+                } else {
+                  scope.json[key].links.internal[index].crawled = false;
                 }
               });
             }
           });
 
           scope.json.totalUrlsCrawled = totalUrlsCrawled;
+          scope.json.totalFailedUrls = totalFailedUrls;
 
           if (typeof process === 'object') {
             process.stdout.write(JSON.stringify(scope.json, null, 2) + '\n'); // eslint-disable-line no-undef
