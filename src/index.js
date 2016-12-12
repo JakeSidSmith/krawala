@@ -100,14 +100,16 @@
   function crawl (options, callback) {
     isValidBaseUrl(options.url);
 
+    var resolvedUrl = resolveUrl(options.url);
+
     var scope = {
       json: {},
       currentDepth: 0,
       baseUrl: {
         url: options.url,
-        resolved: resolveUrl(options.url)
+        resolved: resolvedUrl
       },
-      urlsToCrawl: [options.url],
+      urlsToCrawl: [resolvedUrl],
       urlsCrawled: [],
       depth: options.depth,
       format: options.format,
