@@ -68,7 +68,7 @@
     };
   }
 
-  function continueCrawl (scope, url) {
+  function continueCrawl (scope, url, currentDepth) {
     request
     .get(url)
     .accept('text/html')
@@ -79,24 +79,16 @@
       } else {
         scope.urlsCrawled.push(url);
 
-        if (res.type === 'text/html' && res.text && !(url in scope.json)) {
+        if (res.type === 'text/html' && res.text && currentDepth < scope.depth) {
           scope.json[url] = getData(scope, res.text, url);
 
           _.each(scope.json[url].links.internal, function (link) {
             if (scope.urlsToCrawl.indexOf(link.resolved) < 0 && scope.urlsCrawled.indexOf(link.resolved) < 0) {
               scope.urlsToCrawl.push(link.resolved);
-              continueCrawl(scope, link.resolved);
+              continueCrawl(scope, link.resolved, currentDepth + 1);
             }
           });
         }
-
-        // if (urls.length && currentDepth < depth) {
-        //   while (urls.length) {
-        //     var childUrl = urls.shift();
-        //
-        //     continueCrawl(childUrl, url, currentDepth + 1);
-        //   }
-        // }
 
         if (scope.urlsToCrawl.length === scope.urlsCrawled.length) {
           var totalUrlsCrawled = _.size(scope.json);
@@ -120,7 +112,6 @@
 
     var scope = {
       json: {},
-      currentDepth: 0,
       baseUrl: {
         url: options.url,
         resolved: resolvedUrl
@@ -133,7 +124,7 @@
       callback: callback
     };
 
-    continueCrawl(scope, scope.urlsToCrawl[0]);
+    continueCrawl(scope, scope.urlsToCrawl[0], 0);
 
   }
 
