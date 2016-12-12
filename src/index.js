@@ -27,7 +27,8 @@
       return {
         url: key,
         resolved: resolveUrl(key, parentUrl),
-        references: values.length
+        references: values.length,
+        crawled: false
       };
     })
     .sortBy('url')
@@ -77,7 +78,10 @@
     .send()
     .end(function (err, res) {
       if (err) {
-        error(err);
+        scope.json[url] = {
+          type: res.type,
+          statusCode: res.statusCode
+        };
       } else {
         scope.urlsCrawled.push(url);
 
@@ -101,6 +105,18 @@
 
         if (scope.urlsToCrawl.length === scope.urlsCrawled.length) {
           var totalUrlsCrawled = _.size(scope.json);
+
+          _.each(scope.json, function (crawledUrl, key) {
+            if (crawledUrl.links) {
+              _.each(crawledUrl.links.internal, function (link, index) {
+                if (link.resolved in scope.json) {
+                  scope.json[key].links.internal[index].crawled = true;
+                  scope.json[key].links.internal[index].type = scope.json[link.resolved].type;
+                  scope.json[key].links.internal[index].statusCode = scope.json[link.resolved].statusCode;
+                }
+              });
+            }
+          });
 
           scope.json.totalUrlsCrawled = totalUrlsCrawled;
 
