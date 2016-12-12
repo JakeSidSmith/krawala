@@ -104,7 +104,7 @@
           }
         } else if (typeof process === 'object') {
           process.stdout.write(JSON.stringify(json, null, 2) + '\n'); // eslint-disable-line no-undef
-        } if (typeof callback === 'function') {
+        } else if (typeof callback === 'function') {
           callback(JSON.stringify(json, null, 2) + '\n');
         }
       }
