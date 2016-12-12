@@ -57,6 +57,10 @@
     })
     .value();
 
+    _.each(links.internal, function (link) {
+      urls.push(link.url);
+    });
+
     return {
       title: $('title').text() || null,
       wordCount: wordCount($('body').text()),
@@ -77,7 +81,11 @@
     };
   }
 
-  function continueCrawl (url) {
+  function continueCrawl (url, currentDepth) {
+    if (typeof currentDepth === 'undefined') {
+      currentDepth = 0;
+    }
+
     request
     .get(url)
     .accept('text/html')
@@ -88,8 +96,11 @@
       } else {
         json[url] = getData(res.text);
 
-        if (urls.length) {
-
+        if (urls.length && currentDepth < depth) {
+          while (urls.length) {
+            console.log(urls[0]);
+            continueCrawl(urls.shift(), currentDepth + 1);
+          }
         } else if (typeof process === 'object') {
           process.stdout.write(JSON.stringify(json, null, 2) + '\n'); // eslint-disable-line no-undef
         } if (typeof callback === 'function') {
@@ -100,8 +111,6 @@
   }
 
   function crawl (options, inputCallback) {
-    callback = inputCallback;
-
     if (!options.url) {
       error('No url specified');
     }
@@ -116,6 +125,8 @@
     json = {};
     depth = options.depth;
     format = options.format;
+
+    callback = inputCallback;
 
     continueCrawl(urls.shift());
 
