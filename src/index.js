@@ -50,7 +50,7 @@
     return {
       failed: false,
       type: res.type,
-      statusCode: res.statusCode,
+      status: res.status,
       title: $('title').text() || null,
       wordCount: wordCount($('body').text()),
       charset: $('meta[charset]').attr('charset') || null,
@@ -81,7 +81,7 @@
       if (err) {
         scope.json[url] = {
           failed: true,
-          statusCode: err.status
+          status: err.status
         };
       } else {
         if (res.type === 'text/html' && res.text) {
@@ -99,7 +99,7 @@
           scope.json[url] = {
             failed: false,
             type: res.type,
-            statusCode: res.statusCode
+            status: res.status
           };
         }
 
@@ -116,7 +116,7 @@
                   scope.json[key].links.internal[index].crawled = true;
                   scope.json[key].links.internal[index].failed = scope.json[link.resolved].failed;
                   scope.json[key].links.internal[index].type = scope.json[link.resolved].type;
-                  scope.json[key].links.internal[index].statusCode = scope.json[link.resolved].statusCode;
+                  scope.json[key].links.internal[index].status = scope.json[link.resolved].status;
                 } else {
                   scope.json[key].links.internal[index].crawled = false;
                 }
