@@ -83,25 +83,23 @@
           failed: true,
           status: err.status
         };
-      } else {
-        if (res.type === 'text/html' && res.text) {
-          scope.json[url] = getData(scope, res, url);
+      } else if (res.type === 'text/html' && res.text) {
+        scope.json[url] = getData(scope, res, url);
 
-          if (currentDepth < scope.depth) {
-            _.each(scope.json[url].links.internal, function (link) {
-              if (scope.urlsToCrawl.indexOf(link.resolved) < 0 && scope.urlsCrawled.indexOf(link.resolved) < 0) {
-                scope.urlsToCrawl.push(link.resolved);
-                continueCrawl(scope, link.resolved, currentDepth + 1);
-              }
-            });
-          }
-        } else {
-          scope.json[url] = {
-            failed: false,
-            type: res.type,
-            status: res.status
-          };
+        if (currentDepth < scope.depth) {
+          _.each(scope.json[url].links.internal, function (link) {
+            if (scope.urlsToCrawl.indexOf(link.resolved) < 0 && scope.urlsCrawled.indexOf(link.resolved) < 0) {
+              scope.urlsToCrawl.push(link.resolved);
+              continueCrawl(scope, link.resolved, currentDepth + 1);
+            }
+          });
         }
+      } else {
+        scope.json[url] = {
+          failed: false,
+          type: res.type,
+          status: res.status
+        };
       }
 
       if (scope.urlsToCrawl.length === scope.urlsCrawled.length) {
