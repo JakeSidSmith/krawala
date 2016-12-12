@@ -14,7 +14,9 @@
   var MATCHES_NO_PROTOCOL = /^\/\//;
   var MATCHES_RELATIVE_URL = /\.?\//;
 
-  function getData (html, baseDomain) {
+  var baseDomain, urls, json, depth, format, callback;
+
+  function getData (html) {
     var $ = cheerio.load(html);
 
     var links = _.chain($('a[href]').toArray().map(function (el) {
@@ -75,43 +77,45 @@
     };
   }
 
-  function crawl (options, callback) {
+  function continueCrawl (url) {
+    request
+    .get(url)
+    .accept('text/html')
+    .send()
+    .end(function (err, res) {
+      if (err) {
+        error(err);
+      } else {
+        json[url] = getData(res.text);
+
+        if (urls.length) {
+
+        } else if (typeof process === 'object') {
+          process.stdout.write(JSON.stringify(json, null, 2) + '\n'); // eslint-disable-line no-undef
+        } if (typeof callback === 'function') {
+          callback(JSON.stringify(json, null, 2) + '\n');
+        }
+      }
+    });
+  }
+
+  function crawl (options, inputCallback) {
+    callback = inputCallback;
+
     if (!options.url) {
       error('No url specified');
     }
 
-    var baseDomain = parseDomain(options.url);
+    baseDomain = parseDomain(options.url);
 
     if (!baseDomain) {
       error('Invalid domain');
     }
 
-    var urls = [options.url];
-    var json = {};
-    var depth = options.depth;
-    var format = options.format;
-
-    function continueCrawl (url) {
-      request
-      .get(url)
-      .accept('text/html')
-      .send()
-      .end(function (err, res) {
-        if (err) {
-          error(err);
-        } else {
-          json[url] = getData(res.text, baseDomain);
-
-          if (urls.length) {
-
-          } else if (typeof process === 'object') {
-            process.stdout.write(JSON.stringify(json, null, 2) + '\n'); // eslint-disable-line no-undef
-          } if (typeof callback === 'function') {
-            callback(JSON.stringify(json, null, 2) + '\n');
-          }
-        }
-      });
-    }
+    urls = [options.url];
+    json = {};
+    depth = options.depth;
+    format = options.format;
 
     continueCrawl(urls.shift());
 
