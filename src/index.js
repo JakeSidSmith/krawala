@@ -12,7 +12,7 @@
   var error = utils.error;
 
   var MATCHES_NO_PROTOCOL = /^\/\//;
-  var MATCHES_RELATIVE_URL = /\.?\//;
+  var MATCHES_RELATIVE_URL = /^\.?\//;
 
   var baseDomain, urls, json, depth, format, callback;
 
