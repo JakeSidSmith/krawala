@@ -9,7 +9,6 @@
 
   var utils = require('./utils');
 
-  var error = utils.error;
   var isSameDomain = utils.isSameDomain;
   var resolveUrl = utils.resolveUrl;
   var isValidBaseUrl = utils.isValidBaseUrl;
