@@ -82,6 +82,11 @@
   }
 
   function continueCrawl (url, currentDepth) {
+    if (MATCHES_RELATIVE_URL.test(url)) {
+      var subDomain = baseDomain.subdomain ? baseDomain.subdomain + '.' : '';
+      url = subDomain + baseDomain.domain + '.' + baseDomain.tld + url;
+    }
+
     if (typeof currentDepth === 'undefined') {
       currentDepth = 0;
     }
