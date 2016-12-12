@@ -81,10 +81,9 @@
     };
   }
 
-  function continueCrawl (url, currentDepth) {
+  function continueCrawl (url, parentUrl, currentDepth) {
     if (MATCHES_RELATIVE_URL.test(url)) {
-      var subDomain = baseDomain.subdomain ? baseDomain.subdomain + '.' : '';
-      url = subDomain + baseDomain.domain + '.' + baseDomain.tld + url;
+      url = parentUrl + url;
     }
 
     if (typeof currentDepth === 'undefined') {
@@ -105,7 +104,7 @@
 
         if (urls.length && currentDepth < depth) {
           while (urls.length) {
-            continueCrawl(urls.shift(), currentDepth + 1);
+            continueCrawl(urls.shift(), url, currentDepth + 1);
           }
         } else if (typeof process === 'object') {
           process.stdout.write(JSON.stringify(json, null, 2) + '\n'); // eslint-disable-line no-undef
@@ -134,7 +133,7 @@
 
     callback = inputCallback;
 
-    continueCrawl(urls.shift());
+    continueCrawl(urls.shift(), '', 0);
 
   }
 
