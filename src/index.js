@@ -86,9 +86,6 @@
       url = parentUrl + url;
     }
 
-    if (typeof currentDepth === 'undefined') {
-      currentDepth = 0;
-    }
 
     request
     .get(url)
