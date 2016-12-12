@@ -94,11 +94,12 @@
       if (err) {
         error(err);
       } else {
-        json[url] = getData(res.text);
+        if (res.type === 'text/html' && res.text && !(url in json)) {
+          json[url] = getData(res.text);
+        }
 
         if (urls.length && currentDepth < depth) {
           while (urls.length) {
-            console.log(urls[0]);
             continueCrawl(urls.shift(), currentDepth + 1);
           }
         } else if (typeof process === 'object') {
