@@ -14,8 +14,8 @@
   var resolveUrl = utils.resolveUrl;
   var isValidBaseUrl = utils.isValidBaseUrl;
 
-  function getData (scope, html, parentUrl) {
-    var $ = cheerio.load(html);
+  function getData (scope, res, parentUrl) {
+    var $ = cheerio.load(res.text);
 
     var links = _.chain($('a[href]').toArray().map(function (el) {
       var element = $(el);
@@ -49,6 +49,8 @@
     .value();
 
     return {
+      type: res.type,
+      statusCode: res.statusCode,
       title: $('title').text() || null,
       wordCount: wordCount($('body').text()),
       charset: $('meta[charset]').attr('charset') || null,
@@ -79,15 +81,22 @@
       } else {
         scope.urlsCrawled.push(url);
 
-        if (res.type === 'text/html' && res.text && currentDepth < scope.depth) {
-          scope.json[url] = getData(scope, res.text, url);
+        if (res.type === 'text/html' && res.text) {
+          scope.json[url] = getData(scope, res, url);
 
-          _.each(scope.json[url].links.internal, function (link) {
-            if (scope.urlsToCrawl.indexOf(link.resolved) < 0 && scope.urlsCrawled.indexOf(link.resolved) < 0) {
-              scope.urlsToCrawl.push(link.resolved);
-              continueCrawl(scope, link.resolved, currentDepth + 1);
-            }
-          });
+          if (currentDepth < scope.depth) {
+            _.each(scope.json[url].links.internal, function (link) {
+              if (scope.urlsToCrawl.indexOf(link.resolved) < 0 && scope.urlsCrawled.indexOf(link.resolved) < 0) {
+                scope.urlsToCrawl.push(link.resolved);
+                continueCrawl(scope, link.resolved, currentDepth + 1);
+              }
+            });
+          }
+        } else {
+          scope.json[url] = {
+            type: res.type,
+            statusCode: res.statusCode
+          };
         }
 
         if (scope.urlsToCrawl.length === scope.urlsCrawled.length) {
