@@ -86,14 +86,11 @@
     .value();
   }
 
-  function getMeta ($) {
-    return _.chain($('meta[name],meta[property]').toArray())
-    .map(function (el) {
-      var element = $(el);
-
-      return [element.attr('name') || element.attr('property'), element.attr('content')];
+  function getAttribs ($, selector) {
+    return _.chain($(selector).toArray())
+    .map(function (link) {
+      return link.attribs;
     })
-    .object()
     .value();
   }
 
@@ -111,7 +108,8 @@
       title: $('title').text() || null,
       wordCount: wordCount($('body').text()),
       charset: $('meta[charset]').attr('charset') || null,
-      meta: getMeta($),
+      meta: getAttribs($, 'meta[name],meta[property]'),
+      links: getAttribs($, 'link[rel]'),
       h1: $('h1').first().text() || null,
       h2: $('h2').first().text() || null,
       h3: $('h3').first().text() || null,
