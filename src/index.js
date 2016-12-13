@@ -29,28 +29,12 @@
     }
   }
 
-  function createProgressBar (scope) {
-    var barLength = 50;
-    var currentDepth = scope.farthestDepth;
-    var totalDepth = scope.depth;
-    var progress = barLength / totalDepth * currentDepth;
-
-    var bar = '';
-
-    for (var i = 0; i < barLength; i += 1) {
-      bar += progress > i ? '#' : '-';
-    }
-
-    return '[' + bar + '] ' + (progress * 2).toFixed(2) + '%';
-  }
-
   function createProgressMessage (scope, currentTask) {
     return (
       '--------------------- Progress ---------------------\n\n' +
       'Depth:  {farthestDepth} / {depth}\n' +
       'Urls:   {currentUrls} / {totalUrls}\n' +
       'Failed: {failed}\n\n' +
-      createProgressBar(scope) + '\n\n' +
       currentTask + '\n'
     )
     .replace('{farthestDepth}', padLeft(scope.farthestDepth))
