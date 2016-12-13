@@ -89,7 +89,7 @@
 
         if (currentDepth < scope.depth) {
           _.each(scope.json[url].links.internal, function (link) {
-            if (scope.urlsToCrawl.indexOf(link.resolved) < 0 && scope.urlsCrawled.indexOf(link.resolved) < 0) {
+            if (scope.urlsToCrawl.indexOf(link.resolved) < 0) {
               scope.urlsToCrawl.push(link.resolved);
               continueCrawl(scope, link.resolved, currentDepth + 1);
             }
