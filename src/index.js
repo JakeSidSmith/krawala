@@ -32,7 +32,7 @@
     .sortBy('url')
     .groupBy(function (link) {
       if (link.url.indexOf('#') === 0) {
-        return 'same-page';
+        return 'samePage';
       }
 
       if (link.url.indexOf('tel:') === 0) {
@@ -63,7 +63,7 @@
       links: {
         internal: links.internal || [],
         external: links.external || [],
-        'same-page': links['same-page'] || [],
+        samePage: links.samePage || [],
         email: links.email || [],
         phone: links.phone || [],
         unknown: links.unknown || []
