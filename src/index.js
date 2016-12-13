@@ -15,11 +15,12 @@
   var isValidBaseUrl = utils.isValidBaseUrl;
 
   function createProgressMessage (scope) {
-    return 'Depth: {farthestDepth}/{depth} Urls: {currentUrls}/{totalUrls}'
+    return 'Depth: {farthestDepth}/{depth} Urls: {currentUrls}/{totalUrls} Failed: {failed}'
     .replace('{farthestDepth}', scope.farthestDepth)
     .replace('{depth}', scope.depth)
     .replace('{currentUrls}', scope.urlsCrawled.length)
-    .replace('{totalUrls}', scope.urlsToCrawl.length);
+    .replace('{totalUrls}', scope.urlsToCrawl.length)
+    .replace('{failed}', scope.failed);
   }
 
   function updateProgress (scope) {
@@ -184,6 +185,8 @@
       updateProgress(scope);
 
       if (err) {
+        scope.failed += 1;
+
         scope.json.urls.push({
           url: url.url,
           resolved: url.resolved,
@@ -251,6 +254,7 @@
       urlsCrawled: [],
       queue: [],
       farthestDepth: 0,
+      failed: 0,
       depth: options.depth,
       format: options.format,
       callback: options.callback,
