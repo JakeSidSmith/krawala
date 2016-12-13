@@ -65,8 +65,7 @@
         external: links.external || [],
         samePage: links.samePage || [],
         email: links.email || [],
-        phone: links.phone || [],
-        unknown: links.unknown || []
+        phone: links.phone || []
       }
     };
   }
