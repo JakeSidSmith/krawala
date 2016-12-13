@@ -16,7 +16,7 @@
   function getData (scope, res, url) {
     var $ = cheerio.load(res.text);
 
-    var links = _.chain($('a[href]').toArray().map(function (el) {
+    var hrefs = _.chain($('a[href]').toArray().map(function (el) {
       var element = $(el);
 
       return element.attr('href');
@@ -65,12 +65,12 @@
       h2: $('h2').first().text() || null,
       h3: $('h3').first().text() || null,
       p: $('p').first().text() || null,
-      links: {
-        internal: links.internal || [],
-        external: links.external || [],
-        samePage: links.samePage || [],
-        email: links.email || [],
-        phone: links.phone || []
+      hrefs: {
+        internal: hrefs.internal || [],
+        external: hrefs.external || [],
+        samePage: hrefs.samePage || [],
+        email: hrefs.email || [],
+        phone: hrefs.phone || []
       }
     };
   }
@@ -97,7 +97,7 @@
         var index = scope.json.urls.length - 1;
 
         if (currentDepth < scope.depth) {
-          _.each(scope.json.urls[index].links.internal, function (link) {
+          _.each(scope.json.urls[index].hrefs.internal, function (link) {
             if (scope.urlsToCrawl.indexOf(link.resolved) < 0) {
               scope.urlsToCrawl.push(link.resolved);
               continueCrawl(scope, link, currentDepth + 1);
@@ -125,7 +125,7 @@
             resolved: crawledUrl.resolved,
             linkedFrom: _.chain(scope.json.urls)
             .filter(function (possiblyLinkedFrom) {
-              return possiblyLinkedFrom.links && _.any(possiblyLinkedFrom.links.internal, function (link) {
+              return possiblyLinkedFrom.hrefs && _.any(possiblyLinkedFrom.hrefs.internal, function (link) {
                 return link.url === crawledUrl.url;
               });
             })
@@ -140,15 +140,15 @@
         var totalFailedUrls = _.size(failedUrls);
 
         _.each(scope.json.urls, function (crawledUrl, index) {
-          if (crawledUrl.links) {
-            _.each(crawledUrl.links.internal, function (link, linkIndex) {
+          if (crawledUrl.hrefs) {
+            _.each(crawledUrl.hrefs.internal, function (link, linkIndex) {
               if (link.resolved in scope.json) {
-                scope.json.urls[index].links.internal[linkIndex].crawled = true;
-                scope.json.urls[index].links.internal[linkIndex].failed = scope.json[link.resolved].failed;
-                scope.json.urls[index].links.internal[linkIndex].type = scope.json[link.resolved].type;
-                scope.json.urls[index].links.internal[linkIndex].status = scope.json[link.resolved].status;
+                scope.json.urls[index].hrefs.internal[linkIndex].crawled = true;
+                scope.json.urls[index].hrefs.internal[linkIndex].failed = scope.json[link.resolved].failed;
+                scope.json.urls[index].hrefs.internal[linkIndex].type = scope.json[link.resolved].type;
+                scope.json.urls[index].hrefs.internal[linkIndex].status = scope.json[link.resolved].status;
               } else {
-                scope.json.urls[index].links.internal[linkIndex].crawled = false;
+                scope.json.urls[index].hrefs.internal[linkIndex].crawled = false;
               }
             });
           }
