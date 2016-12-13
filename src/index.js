@@ -100,11 +100,14 @@
       title: $('title').text() || null,
       wordCount: wordCount($('body').text()),
       charset: $('meta[charset]').attr('charset') || null,
-      meta: _.object($('meta[name],meta[property]').toArray().map(function (el) {
+      meta: _.chain($('meta[name],meta[property]').toArray())
+      .map(function (el) {
         var element = $(el);
 
         return [element.attr('name') || element.attr('property'), element.attr('content')];
-      })),
+      })
+      .object()
+      .value(),
       h1: $('h1').first().text() || null,
       h2: $('h2').first().text() || null,
       h3: $('h3').first().text() || null,
