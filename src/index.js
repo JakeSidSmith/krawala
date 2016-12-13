@@ -25,7 +25,7 @@
     .map(function (values, key) {
       return {
         url: key,
-        resolved: resolveUrl(key, url),
+        resolved: resolveUrl(key, url.resolved),
         references: values.length
       };
     })
@@ -48,7 +48,8 @@
     .value();
 
     return {
-      url: url,
+      url: url.url,
+      resolved: url.resolved,
       failed: false,
       type: res.type,
       status: res.status,
@@ -72,15 +73,16 @@
 
   function continueCrawl (scope, url, currentDepth) {
     request
-    .get(url)
+    .get(url.resolved)
     .accept('text/html')
     .send()
     .end(function (err, res) {
-      scope.urlsCrawled.push(url);
+      scope.urlsCrawled.push(url.resolved);
 
       if (err) {
         scope.json.urls.push({
-          url: url,
+          url: url.url,
+          resolved: url.resolved,
           failed: true,
           type: err.type || null,
           status: err.status || null
@@ -94,13 +96,14 @@
           _.each(scope.json.urls[index].links.internal, function (link) {
             if (scope.urlsToCrawl.indexOf(link.resolved) < 0) {
               scope.urlsToCrawl.push(link.resolved);
-              continueCrawl(scope, link.resolved, currentDepth + 1);
+              continueCrawl(scope, link, currentDepth + 1);
             }
           });
         }
       } else {
         scope.json.urls.push({
-          url: url,
+          url: url.url,
+          resolved: url.resolved,
           failed: false,
           type: res.type,
           status: res.status
@@ -113,7 +116,19 @@
           return crawledUrl.failed;
         })
         .map(function (crawledUrl) {
-          return crawledUrl.url;
+          return {
+            url: crawledUrl.url,
+            resolved: crawledUrl.resolved,
+            linkedFrom: _.chain(scope.json.urls)
+            .filter(function (possiblyLinkedFrom) {
+              return possiblyLinkedFrom.links && _.any(possiblyLinkedFrom.links.internal, function (link) {
+                return link.url === crawledUrl.url;
+              });
+            })
+            .map(function (linkedFrom) {
+              return linkedFrom.resolved;
+            })
+          };
         })
         .value();
 
@@ -169,7 +184,7 @@
       callback: callback
     };
 
-    continueCrawl(scope, scope.urlsToCrawl[0], 0);
+    continueCrawl(scope, scope.baseUrl, 0);
 
   }
 
