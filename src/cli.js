@@ -48,6 +48,13 @@
       default : true,
       type: 'boolean',
       describe: 'Run requests in parallel'
+    },
+    interval: {
+      group: CRAWL_OPTIONS,
+      alias : 'i',
+      default : 0,
+      type: 'number',
+      describe: 'Interval between requests (millis) when not in parallel'
     }
   })
   .help('help')

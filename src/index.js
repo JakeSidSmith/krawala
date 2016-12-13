@@ -250,8 +250,14 @@
       while (scope.queue.length) {
         scope.queue.shift()(runCrawl.bind(null, scope));
       }
-    } if (scope.queue.length) {
-      scope.queue.shift()(runCrawl.bind(null, scope));
+    } else if (scope.queue.length) {
+      if (scope.interval) {
+        setTimeout(function () {
+          scope.queue.shift()(runCrawl.bind(null, scope));
+        }, scope.interval);
+      } else {
+        scope.queue.shift()(runCrawl.bind(null, scope));
+      }
     }
   }
 
@@ -276,7 +282,8 @@
       depth: options.depth,
       format: options.format,
       callback: options.callback,
-      parallel: options.parallel
+      parallel: options.parallel,
+      interval: options.interval
     };
 
     scope.queue.push(continueCrawl.bind(null, scope, scope.baseUrl, 0));
