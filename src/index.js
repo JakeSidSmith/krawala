@@ -104,10 +104,12 @@
       }
 
       if (scope.urlsToCrawl.length === scope.urlsCrawled.length) {
-        var totalUrlsCrawled = _.size(scope.json);
-        var totalFailedUrls = _.chain(scope.json).filter(function (crawledUrl) {
+        var failedUrls = _.filter(scope.json, function (crawledUrl) {
           return crawledUrl.failed;
-        }).size().value();
+        });
+
+        var totalUrlsCrawled = _.size(scope.json);
+        var totalFailedUrls = _.size(failedUrls);
 
         _.each(scope.json, function (crawledUrl, key) {
           if (crawledUrl.links) {
@@ -124,6 +126,7 @@
           }
         });
 
+        scope.json.failedUrls = failedUrls;
         scope.json.totalUrlsCrawled = totalUrlsCrawled;
         scope.json.totalFailedUrls = totalFailedUrls;
 
