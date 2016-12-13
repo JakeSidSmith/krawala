@@ -14,20 +14,56 @@
   var resolveUrl = utils.resolveUrl;
   var isValidBaseUrl = utils.isValidBaseUrl;
 
-  function createProgressMessage (scope) {
-    return 'Depth: {farthestDepth}/{depth} Urls: {currentUrls}/{totalUrls} Failed: {failed}'
-    .replace('{farthestDepth}', scope.farthestDepth)
+  var PROGRESS_LINES = 9;
+  var PADDING = '                ';
+
+  function padLeft (value) {
+    value = PADDING + value;
+    return value.substring(value.length - PADDING.length);
+  }
+
+  function clearLines (lines) {
+    for (var i = lines; i > 0; i -= 1) {
+      process.stdout.cursorTo(0, i); // eslint-disable-line no-undef
+      process.stdout.clearLine(); // eslint-disable-line no-undef
+    }
+  }
+
+  function createProgressBar (scope) {
+    var barLength = 50;
+    var currentDepth = scope.farthestDepth;
+    var totalDepth = scope.depth;
+    var progress = barLength / totalDepth * currentDepth;
+
+    var bar = '';
+
+    for (var i = 0; i < barLength; i += 1) {
+      bar += progress > i ? '#' : '-';
+    }
+
+    return '[' + bar + '] ' + (progress * 2).toFixed(2) + '%';
+  }
+
+  function createProgressMessage (scope, currentTask) {
+    return (
+      '--------------------- Progress ---------------------\n\n' +
+      'Depth:  {farthestDepth} / {depth}\n' +
+      'Urls:   {currentUrls} / {totalUrls}\n' +
+      'Failed: {failed}\n\n' +
+      createProgressBar(scope) + '\n\n' +
+      currentTask
+    )
+    .replace('{farthestDepth}', padLeft(scope.farthestDepth))
     .replace('{depth}', scope.depth)
-    .replace('{currentUrls}', scope.urlsCrawled.length)
+    .replace('{currentUrls}', padLeft(scope.urlsCrawled.length))
     .replace('{totalUrls}', scope.urlsToCrawl.length)
-    .replace('{failed}', scope.failed);
+    .replace('{failed}', padLeft(scope.failed));
   }
 
   function updateProgress (scope, currentTask) {
     if (typeof process === 'object') {
-      process.stdout.cursorTo(0); // eslint-disable-line no-undef
-      process.stdout.clearLine(); // eslint-disable-line no-undef
-      process.stdout.write(createProgressMessage(scope) + ' ' + currentTask); // eslint-disable-line no-undef
+      clearLines(PROGRESS_LINES);
+      process.stdout.write(createProgressMessage(scope, currentTask)); // eslint-disable-line no-undef
     }
   }
 
@@ -161,8 +197,7 @@
     scope.json.totalFailedUrls = _.size(scope.json.failedUrls);;
 
     if (typeof process === 'object') {
-      process.stdout.cursorTo(0); // eslint-disable-line no-undef
-      process.stdout.clearLine(); // eslint-disable-line no-undef
+      clearLines(PROGRESS_LINES);
       process.stdout.write(getOutput(scope)); // eslint-disable-line no-undef
     } else if (typeof scope.callback === 'function') {
       scope.callback(getOutput(scope));
