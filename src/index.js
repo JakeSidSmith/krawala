@@ -24,8 +24,8 @@
 
   function clearLines (lines) {
     for (var i = lines; i > 0; i -= 1) {
-      process.stdout.cursorTo(0, i); // eslint-disable-line no-undef
-      process.stdout.clearLine(); // eslint-disable-line no-undef
+      process.stderr.cursorTo(0, i); // eslint-disable-line no-undef
+      process.stderr.clearLine(); // eslint-disable-line no-undef
     }
   }
 
@@ -63,7 +63,7 @@
   function updateProgress (scope, currentTask) {
     if (typeof process === 'object') {
       clearLines(PROGRESS_LINES);
-      process.stdout.write(createProgressMessage(scope, currentTask)); // eslint-disable-line no-undef
+      process.stderr.write(createProgressMessage(scope, currentTask)); // eslint-disable-line no-undef
     }
   }
 
@@ -197,7 +197,6 @@
     scope.json.totalFailedUrls = _.size(scope.json.failedUrls);;
 
     if (typeof process === 'object') {
-      clearLines(PROGRESS_LINES);
       process.stdout.write(getOutput(scope)); // eslint-disable-line no-undef
     } else if (typeof scope.callback === 'function') {
       scope.callback(getOutput(scope));
