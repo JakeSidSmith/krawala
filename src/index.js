@@ -81,7 +81,8 @@
       if (err) {
         scope.json[url] = {
           failed: true,
-          status: err.status
+          type: err.type || null,
+          status: err.status || null
         };
       } else if (res.type === 'text/html' && res.text) {
         scope.json[url] = getData(scope, res, url);
