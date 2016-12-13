@@ -22,9 +22,9 @@
     return value.substring(value.length - PADDING.length);
   }
 
-  function clearLines (lines) {
-    for (var i = lines; i > 0; i -= 1) {
-      process.stderr.cursorTo(0, i); // eslint-disable-line no-undef
+  function clearProgress (lines) {
+    for (var i = 0; i < PROGRESS_LINES; i += 1) {
+      process.stderr.moveCursor(0, -1); // eslint-disable-line no-undef
       process.stderr.clearLine(); // eslint-disable-line no-undef
     }
   }
@@ -46,8 +46,13 @@
 
   function updateProgress (scope, currentTask) {
     if (typeof process === 'object') {
-      clearLines(PROGRESS_LINES);
+      if (scope.progressMade) {
+        clearProgress();
+      }
+
       process.stderr.write(createProgressMessage(scope, currentTask)); // eslint-disable-line no-undef
+
+      scope.progressMade = true;
     }
   }
 
