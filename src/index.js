@@ -23,11 +23,11 @@
     .replace('{failed}', scope.failed);
   }
 
-  function updateProgress (scope) {
+  function updateProgress (scope, currentTask) {
     if (typeof process === 'object') {
       process.stdout.cursorTo(0); // eslint-disable-line no-undef
       process.stdout.clearLine(); // eslint-disable-line no-undef
-      process.stdout.write(createProgressMessage(scope)); // eslint-disable-line no-undef
+      process.stdout.write(createProgressMessage(scope) + ' ' + currentTask); // eslint-disable-line no-undef
     }
   }
 
@@ -174,7 +174,7 @@
       scope.farthestDepth = currentDepth;
     }
 
-    updateProgress(scope);
+    updateProgress(scope, 'Crawling: ' + url.resolved);
 
     request
     .get(url.resolved)
@@ -182,7 +182,7 @@
     .send()
     .end(function (err, res) {
       scope.urlsCrawled.push(url.resolved);
-      updateProgress(scope);
+      updateProgress(scope, 'Crawled: ' + url.resolved);
 
       if (err) {
         scope.failed += 1;
