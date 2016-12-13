@@ -14,7 +14,7 @@
   var resolveUrl = utils.resolveUrl;
   var isValidBaseUrl = utils.isValidBaseUrl;
 
-  var PROGRESS_LINES = 10;
+  var PROGRESS_LINES = 7;
   var PADDING = '                ';
 
   function padLeft (value) {
