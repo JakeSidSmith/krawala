@@ -150,7 +150,7 @@
     }
   }
 
-  function continueCrawl (scope, url, currentDepth) {
+  function continueCrawl (scope, url, currentDepth, then) {
     request
     .get(url.resolved)
     .accept('text/html')
@@ -175,7 +175,7 @@
           _.each(scope.json.urls[index].hrefs.internal, function (href) {
             if (scope.urlsToCrawl.indexOf(href.resolved) < 0) {
               scope.urlsToCrawl.push(href.resolved);
-              continueCrawl(scope, href, currentDepth + 1);
+              scope.queue.push(continueCrawl.bind(null, scope, href, currentDepth + 1));
             }
           });
         }
@@ -189,10 +189,26 @@
         });
       }
 
+      if (typeof then === 'function') {
+        then();
+      }
+
       if (scope.urlsToCrawl.length === scope.urlsCrawled.length) {
         complete(scope);
       }
     });
+  }
+
+  function runCrawl (scope) {
+    if (scope.parallel) {
+      while (scope.queue.length) {
+        scope.queue.shift()(runCrawl.bind(null, scope));
+      }
+    } else {
+      if (scope.queue.length) {
+        scope.queue.shift()(runCrawl.bind(null, scope));
+      }
+    }
   }
 
   function crawl (options) {
@@ -210,13 +226,16 @@
       },
       urlsToCrawl: [resolvedUrl],
       urlsCrawled: [],
+      queue: [],
       depth: options.depth,
       format: options.format,
       callback: options.callback,
       parallel: options.parallel
     };
 
-    continueCrawl(scope, scope.baseUrl, 0);
+    scope.queue.push(continueCrawl.bind(null, scope, scope.baseUrl, 0));
+
+    runCrawl(scope);
 
   }
 
