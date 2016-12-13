@@ -204,10 +204,8 @@
       while (scope.queue.length) {
         scope.queue.shift()(runCrawl.bind(null, scope));
       }
-    } else {
-      if (scope.queue.length) {
-        scope.queue.shift()(runCrawl.bind(null, scope));
-      }
+    } if (scope.queue.length) {
+      scope.queue.shift()(runCrawl.bind(null, scope));
     }
   }
 
