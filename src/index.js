@@ -25,9 +25,9 @@
 
   function updateProgress (scope) {
     if (typeof process === 'object') {
-      process.stdout.cursorTo(0);
-      process.stdout.clearLine();
-      process.stdout.write(createProgressMessage(scope));
+      process.stdout.cursorTo(0); // eslint-disable-line no-undef
+      process.stdout.clearLine(); // eslint-disable-line no-undef
+      process.stdout.write(createProgressMessage(scope)); // eslint-disable-line no-undef
     }
   }
 
@@ -161,8 +161,8 @@
     scope.json.totalFailedUrls = _.size(scope.json.failedUrls);;
 
     if (typeof process === 'object') {
-      process.stdout.cursorTo(0);
-      process.stdout.clearLine();
+      process.stdout.cursorTo(0); // eslint-disable-line no-undef
+      process.stdout.clearLine(); // eslint-disable-line no-undef
       process.stdout.write(getOutput(scope)); // eslint-disable-line no-undef
     } else if (typeof scope.callback === 'function') {
       scope.callback(getOutput(scope));
