@@ -53,10 +53,8 @@
     .value();
   }
 
-  function getData (scope, res, url) {
-    var $ = cheerio.load(res.text);
-
-    var hrefs = _.chain($('a[href]').toArray().map(function (el) {
+  function getHrefs (scope, url, $) {
+    return _.chain($('a[href]').toArray().map(function (el) {
       var element = $(el);
 
       return element.attr('href');
@@ -86,6 +84,12 @@
       return isSameDomain(link.url, scope.baseUrl.resolved) ? 'internal' : 'external';
     })
     .value();
+  }
+
+  function getData (scope, res, url) {
+    var $ = cheerio.load(res.text);
+
+    var hrefs = getHrefs(scope, url, $);
 
     return {
       url: url.url,
