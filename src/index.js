@@ -125,6 +125,20 @@
     };
   }
 
+  function complete (scope) {
+    markHrefsAsFailed(scope);
+
+    scope.json.failedUrls = getFailedUrls(scope);;
+    scope.json.totalUrlsCrawled = _.size(scope.json.urls);
+    scope.json.totalFailedUrls = _.size(scope.json.failedUrls);;
+
+    if (typeof process === 'object') {
+      process.stdout.write(JSON.stringify(scope.json, null, 2) + '\n'); // eslint-disable-line no-undef
+    } else if (typeof scope.callback === 'function') {
+      scope.callback(JSON.stringify(scope.json, null, 2) + '\n');
+    }
+  }
+
   function continueCrawl (scope, url, currentDepth) {
     request
     .get(url.resolved)
@@ -165,17 +179,7 @@
       }
 
       if (scope.urlsToCrawl.length === scope.urlsCrawled.length) {
-        markHrefsAsFailed(scope);
-
-        scope.json.failedUrls = getFailedUrls(scope);;
-        scope.json.totalUrlsCrawled = _.size(scope.json.urls);
-        scope.json.totalFailedUrls = _.size(scope.json.failedUrls);;
-
-        if (typeof process === 'object') {
-          process.stdout.write(JSON.stringify(scope.json, null, 2) + '\n'); // eslint-disable-line no-undef
-        } else if (typeof scope.callback === 'function') {
-          scope.callback(JSON.stringify(scope.json, null, 2) + '\n');
-        }
+        complete(scope);
       }
     });
   }
