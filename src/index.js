@@ -13,6 +13,46 @@
   var resolveUrl = utils.resolveUrl;
   var isValidBaseUrl = utils.isValidBaseUrl;
 
+  function markHrefsAsFailed (scope) {
+    _.each(scope.json.urls, function (crawledUrl, index) {
+      if (crawledUrl.hrefs) {
+        _.each(crawledUrl.hrefs.internal, function (link, linkIndex) {
+          if (link.resolved in scope.json) {
+            scope.json.urls[index].hrefs.internal[linkIndex].crawled = true;
+            scope.json.urls[index].hrefs.internal[linkIndex].failed = scope.json[link.resolved].failed;
+            scope.json.urls[index].hrefs.internal[linkIndex].type = scope.json[link.resolved].type;
+            scope.json.urls[index].hrefs.internal[linkIndex].status = scope.json[link.resolved].status;
+          } else {
+            scope.json.urls[index].hrefs.internal[linkIndex].crawled = false;
+          }
+        });
+      }
+    });
+  }
+
+  function getFailedUrls (scope) {
+    return _.chain(scope.json.urls)
+    .filter(function (crawledUrl) {
+      return crawledUrl.failed;
+    })
+    .map(function (crawledUrl) {
+      return {
+        url: crawledUrl.url,
+        resolved: crawledUrl.resolved,
+        linkedFrom: _.chain(scope.json.urls)
+        .filter(function (possiblyLinkedFrom) {
+          return possiblyLinkedFrom.hrefs && _.any(possiblyLinkedFrom.hrefs.internal, function (link) {
+            return link.url === crawledUrl.url;
+          });
+        })
+        .map(function (linkedFrom) {
+          return linkedFrom.resolved;
+        })
+      };
+    })
+    .value();
+  }
+
   function getData (scope, res, url) {
     var $ = cheerio.load(res.text);
 
@@ -115,48 +155,11 @@
       }
 
       if (scope.urlsToCrawl.length === scope.urlsCrawled.length) {
-        var failedUrls = _.chain(scope.json.urls)
-        .filter(function (crawledUrl) {
-          return crawledUrl.failed;
-        })
-        .map(function (crawledUrl) {
-          return {
-            url: crawledUrl.url,
-            resolved: crawledUrl.resolved,
-            linkedFrom: _.chain(scope.json.urls)
-            .filter(function (possiblyLinkedFrom) {
-              return possiblyLinkedFrom.hrefs && _.any(possiblyLinkedFrom.hrefs.internal, function (link) {
-                return link.url === crawledUrl.url;
-              });
-            })
-            .map(function (linkedFrom) {
-              return linkedFrom.resolved;
-            })
-          };
-        })
-        .value();
+        markHrefsAsFailed(scope);
 
-        var totalUrlsCrawled = _.size(scope.json.urls);
-        var totalFailedUrls = _.size(failedUrls);
-
-        _.each(scope.json.urls, function (crawledUrl, index) {
-          if (crawledUrl.hrefs) {
-            _.each(crawledUrl.hrefs.internal, function (link, linkIndex) {
-              if (link.resolved in scope.json) {
-                scope.json.urls[index].hrefs.internal[linkIndex].crawled = true;
-                scope.json.urls[index].hrefs.internal[linkIndex].failed = scope.json[link.resolved].failed;
-                scope.json.urls[index].hrefs.internal[linkIndex].type = scope.json[link.resolved].type;
-                scope.json.urls[index].hrefs.internal[linkIndex].status = scope.json[link.resolved].status;
-              } else {
-                scope.json.urls[index].hrefs.internal[linkIndex].crawled = false;
-              }
-            });
-          }
-        });
-
-        scope.json.failedUrls = failedUrls;
-        scope.json.totalUrlsCrawled = totalUrlsCrawled;
-        scope.json.totalFailedUrls = totalFailedUrls;
+        scope.json.failedUrls = getFailedUrls(scope);;
+        scope.json.totalUrlsCrawled = _.size(scope.json.urls);
+        scope.json.totalFailedUrls = _.size(scope.json.failedUrls);;
 
         if (typeof process === 'object') {
           process.stdout.write(JSON.stringify(scope.json, null, 2) + '\n'); // eslint-disable-line no-undef
