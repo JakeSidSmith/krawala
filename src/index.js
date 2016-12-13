@@ -61,6 +61,10 @@
 
         return [element.attr('name') || element.attr('property'), element.attr('content')];
       })),
+      h1: $('h1').first().text() || null,
+      h2: $('h2').first().text() || null,
+      h3: $('h3').first().text() || null,
+      p: $('p').first().text() || null,
       links: {
         internal: links.internal || [],
         external: links.external || [],
