@@ -184,7 +184,7 @@
     });
   }
 
-  function crawl (options, callback) {
+  function crawl (options) {
     isValidBaseUrl(options.url);
 
     var resolvedUrl = resolveUrl(options.url);
@@ -201,8 +201,7 @@
       urlsCrawled: [],
       depth: options.depth,
       format: options.format,
-
-      callback: callback
+      callback: options.callback
     };
 
     continueCrawl(scope, scope.baseUrl, 0);
