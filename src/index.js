@@ -110,6 +110,7 @@
       charset: $('meta[charset]').attr('charset') || null,
       meta: getAttribs($, 'meta[name],meta[property]'),
       links: getAttribs($, 'link[rel]'),
+      scripts: getAttribs($, 'script[src]'),
       h1: $('h1').first().text() || null,
       h2: $('h2').first().text() || null,
       h3: $('h3').first().text() || null,
