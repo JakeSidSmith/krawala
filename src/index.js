@@ -14,7 +14,7 @@
   var resolveUrl = utils.resolveUrl;
   var isValidBaseUrl = utils.isValidBaseUrl;
 
-  var PROGRESS_LINES = 9;
+  var PROGRESS_LINES = 10;
   var PADDING = '                ';
 
   function padLeft (value) {
@@ -51,7 +51,7 @@
       'Urls:   {currentUrls} / {totalUrls}\n' +
       'Failed: {failed}\n\n' +
       createProgressBar(scope) + '\n\n' +
-      currentTask
+      currentTask + '\n'
     )
     .replace('{farthestDepth}', padLeft(scope.farthestDepth))
     .replace('{depth}', scope.depth)
