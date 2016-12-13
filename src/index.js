@@ -6,6 +6,7 @@
   var request = require('superagent');
   var cheerio = require('cheerio');
   var wordCount = require('word-count');
+  var yaml = require('js-yaml');
 
   var utils = require('./utils');
 
@@ -125,6 +126,16 @@
     };
   }
 
+  function getOutput (scope) {
+    switch (scope.format) {
+      case 'yaml':
+        return yaml.safeDump(scope.json, {indent: 2});
+      case 'json':
+      default:
+        return JSON.stringify(scope.json, null, 2) + '\n';
+    }
+  }
+
   function complete (scope) {
     markHrefsAsFailed(scope);
 
@@ -133,9 +144,9 @@
     scope.json.totalFailedUrls = _.size(scope.json.failedUrls);;
 
     if (typeof process === 'object') {
-      process.stdout.write(JSON.stringify(scope.json, null, 2) + '\n'); // eslint-disable-line no-undef
+      process.stdout.write(getOutput(scope)); // eslint-disable-line no-undef
     } else if (typeof scope.callback === 'function') {
-      scope.callback(JSON.stringify(scope.json, null, 2) + '\n');
+      scope.callback(getOutput(scope));
     }
   }
 

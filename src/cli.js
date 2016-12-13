@@ -40,7 +40,7 @@
       default : 'json',
       type: 'string',
       describe: 'Format to return',
-      choices: ['json']
+      choices: ['json', 'yaml']
     }
   })
   .help('help')
