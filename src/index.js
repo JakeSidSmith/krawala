@@ -13,7 +13,7 @@
   var resolveUrl = utils.resolveUrl;
   var isValidBaseUrl = utils.isValidBaseUrl;
 
-  function getData (scope, res, parentUrl) {
+  function getData (scope, res, url) {
     var $ = cheerio.load(res.text);
 
     var links = _.chain($('a[href]').toArray().map(function (el) {
@@ -25,7 +25,7 @@
     .map(function (values, key) {
       return {
         url: key,
-        resolved: resolveUrl(key, parentUrl),
+        resolved: resolveUrl(key, url),
         references: values.length
       };
     })
@@ -48,6 +48,7 @@
     .value();
 
     return {
+      url: url,
       failed: false,
       type: res.type,
       status: res.status,
@@ -79,16 +80,19 @@
       scope.urlsCrawled.push(url);
 
       if (err) {
-        scope.json[url] = {
+        scope.json.urls.push({
+          url: url,
           failed: true,
           type: err.type || null,
           status: err.status || null
-        };
+        });
       } else if (res.type === 'text/html' && res.text) {
-        scope.json[url] = getData(scope, res, url);
+        scope.json.urls.push(getData(scope, res, url));
+
+        var index = scope.json.urls.length - 1;
 
         if (currentDepth < scope.depth) {
-          _.each(scope.json[url].links.internal, function (link) {
+          _.each(scope.json.urls[index].links.internal, function (link) {
             if (scope.urlsToCrawl.indexOf(link.resolved) < 0) {
               scope.urlsToCrawl.push(link.resolved);
               continueCrawl(scope, link.resolved, currentDepth + 1);
@@ -96,31 +100,37 @@
           });
         }
       } else {
-        scope.json[url] = {
+        scope.json.urls.push({
+          url: url,
           failed: false,
           type: res.type,
           status: res.status
-        };
+        });
       }
 
       if (scope.urlsToCrawl.length === scope.urlsCrawled.length) {
-        var failedUrls = _.filter(scope.json, function (crawledUrl) {
+        var failedUrls = _.chain(scope.json.urls)
+        .filter(function (crawledUrl) {
           return crawledUrl.failed;
-        });
+        })
+        .map(function (crawledUrl) {
+          return crawledUrl.url;
+        })
+        .value();
 
-        var totalUrlsCrawled = _.size(scope.json);
+        var totalUrlsCrawled = _.size(scope.json.urls);
         var totalFailedUrls = _.size(failedUrls);
 
-        _.each(scope.json, function (crawledUrl, key) {
+        _.each(scope.json.urls, function (crawledUrl, index) {
           if (crawledUrl.links) {
-            _.each(crawledUrl.links.internal, function (link, index) {
+            _.each(crawledUrl.links.internal, function (link, linkIndex) {
               if (link.resolved in scope.json) {
-                scope.json[key].links.internal[index].crawled = true;
-                scope.json[key].links.internal[index].failed = scope.json[link.resolved].failed;
-                scope.json[key].links.internal[index].type = scope.json[link.resolved].type;
-                scope.json[key].links.internal[index].status = scope.json[link.resolved].status;
+                scope.json.urls[index].links.internal[linkIndex].crawled = true;
+                scope.json.urls[index].links.internal[linkIndex].failed = scope.json[link.resolved].failed;
+                scope.json.urls[index].links.internal[linkIndex].type = scope.json[link.resolved].type;
+                scope.json.urls[index].links.internal[linkIndex].status = scope.json[link.resolved].status;
               } else {
-                scope.json[key].links.internal[index].crawled = false;
+                scope.json.urls[index].links.internal[linkIndex].crawled = false;
               }
             });
           }
@@ -145,7 +155,9 @@
     var resolvedUrl = resolveUrl(options.url);
 
     var scope = {
-      json: {},
+      json: {
+        urls: []
+      },
       baseUrl: {
         url: options.url,
         resolved: resolvedUrl
