@@ -14,6 +14,22 @@
   var resolveUrl = utils.resolveUrl;
   var isValidBaseUrl = utils.isValidBaseUrl;
 
+  function createProgressMessage (scope) {
+    return 'Depth: {farthestDepth}/{depth} Urls: {currentUrls}/{totalUrls}'
+    .replace('{farthestDepth}', scope.farthestDepth)
+    .replace('{depth}', scope.depth)
+    .replace('{currentUrls}', scope.urlsCrawled.length)
+    .replace('{totalUrls}', scope.urlsToCrawl.length);
+  }
+
+  function updateProgress (scope) {
+    if (typeof process === 'object') {
+      process.stdout.cursorTo(0);
+      process.stdout.clearLine();
+      process.stdout.write(createProgressMessage(scope));
+    }
+  }
+
   function markHrefsAsFailed (scope) {
     _.each(scope.json.urls, function (crawledUrl, index) {
       if (crawledUrl.hrefs) {
@@ -144,6 +160,8 @@
     scope.json.totalFailedUrls = _.size(scope.json.failedUrls);;
 
     if (typeof process === 'object') {
+      process.stdout.cursorTo(0);
+      process.stdout.clearLine();
       process.stdout.write(getOutput(scope)); // eslint-disable-line no-undef
     } else if (typeof scope.callback === 'function') {
       scope.callback(getOutput(scope));
@@ -151,12 +169,19 @@
   }
 
   function continueCrawl (scope, url, currentDepth, then) {
+    if (currentDepth > scope.farthestDepth) {
+      scope.farthestDepth = currentDepth;
+    }
+
+    updateProgress(scope);
+
     request
     .get(url.resolved)
     .accept('text/html')
     .send()
     .end(function (err, res) {
       scope.urlsCrawled.push(url.resolved);
+      updateProgress(scope);
 
       if (err) {
         scope.json.urls.push({
@@ -225,6 +250,7 @@
       urlsToCrawl: [resolvedUrl],
       urlsCrawled: [],
       queue: [],
+      farthestDepth: 0,
       depth: options.depth,
       format: options.format,
       callback: options.callback,
