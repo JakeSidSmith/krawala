@@ -41,6 +41,13 @@
       type: 'string',
       describe: 'Format to return',
       choices: ['json', 'yaml']
+    },
+    parallel: {
+      group: CRAWL_OPTIONS,
+      alias : 'p',
+      default : true,
+      type: 'boolean',
+      describe: 'Run requests in parallel'
     }
   })
   .help('help')

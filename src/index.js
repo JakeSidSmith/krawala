@@ -212,7 +212,8 @@
       urlsCrawled: [],
       depth: options.depth,
       format: options.format,
-      callback: options.callback
+      callback: options.callback,
+      parallel: options.parallel
     };
 
     continueCrawl(scope, scope.baseUrl, 0);
