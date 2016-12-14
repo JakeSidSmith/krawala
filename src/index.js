@@ -99,6 +99,7 @@
         })
       };
     })
+    .sortBy('url')
     .value();
   }
 
