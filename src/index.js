@@ -291,11 +291,11 @@
       queue: [],
       farthestDepth: 0,
       failed: 0,
-      depth: options.depth,
-      format: options.format,
+      depth: typeof options.depth === 'undefined' ? 10 : options.depth,
+      format: typeof options.format === 'undefined' ? 'json' : options.format,
       callback: options.callback,
-      parallel: options.parallel,
-      interval: options.interval
+      parallel: typeof options.parallel === 'undefined' ? true : options.parallel,
+      interval: typeof options.interval === 'undefined' ? 0 : options.interval
     };
 
     scope.queue.push(continueCrawl.bind(null, scope, scope.baseUrl, 0));
