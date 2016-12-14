@@ -22,7 +22,7 @@
     return value.substring(value.length - PADDING.length);
   }
 
-  function clearProgress (lines) {
+  function clearProgress () {
     for (var i = 0; i < PROGRESS_LINES; i += 1) {
       process.stderr.moveCursor(0, -1); // eslint-disable-line no-undef
       process.stderr.clearLine(); // eslint-disable-line no-undef
