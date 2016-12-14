@@ -56,15 +56,21 @@
     }
   }
 
-  function markHrefsAsFailed (scope) {
+  function markHrefsAsCrawledAndFailed (scope) {
+    var crawledUrls = scope.json.urls.map(function (crawledUrl) {
+      return crawledUrl.resolved;
+    });
+
     _.each(scope.json.urls, function (crawledUrl, index) {
       if (crawledUrl.hrefs) {
         _.each(crawledUrl.hrefs.internal, function (href, hrefIndex) {
-          if (href.resolved in scope.json) {
+          var crawledIndex = crawledUrls.indexOf(href.resolved);
+
+          if (crawledIndex >= 0) {
             scope.json.urls[index].hrefs.internal[hrefIndex].crawled = true;
-            scope.json.urls[index].hrefs.internal[hrefIndex].failed = scope.json[href.resolved].failed;
-            scope.json.urls[index].hrefs.internal[hrefIndex].type = scope.json[href.resolved].type;
-            scope.json.urls[index].hrefs.internal[hrefIndex].status = scope.json[href.resolved].status;
+            scope.json.urls[index].hrefs.internal[hrefIndex].failed = scope.json.urls[crawledIndex].failed;
+            scope.json.urls[index].hrefs.internal[hrefIndex].type = scope.json.urls[crawledIndex].type;
+            scope.json.urls[index].hrefs.internal[hrefIndex].status = scope.json.urls[crawledIndex].status;
           } else {
             scope.json.urls[index].hrefs.internal[hrefIndex].crawled = false;
           }
@@ -179,7 +185,7 @@
   }
 
   function complete (scope) {
-    markHrefsAsFailed(scope);
+    markHrefsAsCrawledAndFailed(scope);
 
     scope.json.failedUrls = getFailedUrls(scope);;
     scope.json.totalUrlsCrawled = _.size(scope.json.urls);
