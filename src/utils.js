@@ -16,7 +16,11 @@
 
   function isSameDomain (url, parentUrl) {
     var parentUrlInfo = parseUrl(parentUrl);
+    // Remove path
+    parentUrlInfo = parseUrl('/', parentUrlInfo.href);
     var urlInfo = parseUrl(url, parentUrl);
+    // Remove path
+    urlInfo = parseUrl('/', urlInfo.href);
 
     var parentDomainInfo = parseDomain(parentUrlInfo.href);
     var domainInfo = parseDomain(urlInfo.href);
