@@ -91,7 +91,7 @@
         linkedFrom: _.chain(scope.json.urls)
         .filter(function (possiblyLinkedFrom) {
           return possiblyLinkedFrom.hrefs && _.any(possiblyLinkedFrom.hrefs.internal, function (href) {
-            return href.url === crawledUrl.url;
+            return href.resolved === crawledUrl.resolved;
           });
         })
         .map(function (linkedFrom) {
