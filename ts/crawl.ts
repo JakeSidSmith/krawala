@@ -1,9 +1,11 @@
 import { Tree } from 'jargs';
 
+const queue = [];
+
 export const crawl = (tree: Tree) => {
   const {
     kwargs: {
-      url = '',
+      url,
       depth = '10',
       format = 'json',
       interval
