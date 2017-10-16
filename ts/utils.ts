@@ -31,7 +31,7 @@ export const resolveUrl = (url: string, parentUrl: string) => {
   return parseUrl(url, parentUrl).href;
 }
 
-export const isValidBaseUrl = (url?: string): true | void => {
+export const validateBaseUrl = (url?: string): true | void => {
   if (typeof url !== 'string' || !url) {
     error('Invalid URL. URL cannot be empty');
     return;
