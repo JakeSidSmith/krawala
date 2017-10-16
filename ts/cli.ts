@@ -10,6 +10,8 @@ import {
   Required
 } from 'jargs';
 
+import { crawl } from './';
+
 collect(
   Help(
     'help',
@@ -35,7 +37,8 @@ collect(
             examples: [
               'krawala crawl -u http://domain.com -d 100'
             ],
-            alias: 'c'
+            alias: 'c',
+            callback: crawl
           },
           Required(
             KWArg(
