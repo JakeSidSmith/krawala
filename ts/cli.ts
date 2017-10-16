@@ -78,6 +78,13 @@ collect(
               alias : 'i',
               type: 'number'
             }
+          ),
+          Flag(
+            'wait',
+            {
+              description: 'Wait for user input upon if a request fails',
+              alias: 'w'
+            }
           )
         )
       )
