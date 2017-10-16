@@ -7,14 +7,6 @@ export interface Progress {
   progressMade: boolean;
 }
 
-export interface Crawlable {
-  url: string;
-  resolved: string;
-  failed: boolean;
-  status: number;
-  type: string | null;
-}
-
 export type Content = Partial<{
   h1: string;
   h2: string;
@@ -27,11 +19,19 @@ export type Meta = Partial<{
   content: string;
 }>
 
+export interface Crawlable {
+  resolved: string;
+  failed: boolean;
+  internal: boolean;
+  status: number;
+  type: string | null;
+}
+
 export type Link = Partial<{
   rel: string;
   type: string;
   href: string;
-}>
+}> & Crawlable
 
 export type Script = Partial<{
   type: string;
@@ -40,9 +40,11 @@ export type Script = Partial<{
 
 export type Image = Partial<{
   src: string;
-}>
+}> & Crawlable
 
-export type Result = Partial<{
+export type Result = {
+  url: string;
+} & Partial<{
   charset: string;
   title: string;
   wordCount: number;
