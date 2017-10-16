@@ -31,19 +31,22 @@
     "node": "6.10.3"
   },
   "dependencies": {
+    "@types/cheerio": "0.22.3",
+    "@types/js-yaml": "3.9.1",
+    "@types/node": "8.0.35",
+    "@types/superagent": "3.5.6",
+    "@types/url-parse": "1.1.0",
     "cheerio": "=0.22.0",
     "jargs": "0.3.3",
-    "js-yaml": "=3.7.0",
+    "js-yaml": "=3.9.1",
     "parse-domain": "=1.0.0",
-    "superagent": "=3.1.0",
+    "superagent": "=3.5.0",
     "typescript": "2.5.3",
     "underscore": "=1.8.3",
     "url-parse": "=1.1.7",
-    "word-count": "=0.2.2",
-    "yargs": "=6.5.0"
+    "word-count": "=0.2.2"
   },
   "devDependencies": {
-    "eslintrc": "JakeSidSmith/eslintrc.git#v0.0.2",
     "tslint": "5.7.0",
     "tslint-eslint-rules": "4.1.1"
   }
