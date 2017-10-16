@@ -42,7 +42,6 @@
     "parse-domain": "=1.0.0",
     "superagent": "=3.5.0",
     "typescript": "2.5.3",
-    "underscore": "=1.8.3",
     "url-parse": "=1.1.7",
     "word-count": "=0.2.2"
   },
