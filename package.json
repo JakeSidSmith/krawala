@@ -7,7 +7,9 @@
     "krawala": "src/cli.js"
   },
   "scripts": {
-    "test": "eslint -c node_modules/eslintrc/.eslintrc-es5 src/"
+    "dist": "./scripts/dist",
+    "lint": "tslint --project tsconfig.json --type-check '@(src|tests|types|docs)/**/*.@(ts|tsx)'",
+    "test": "npm run lint"
   },
   "repository": {
     "type": "git",
@@ -26,19 +28,23 @@
   },
   "homepage": "https://github.com/JakeSidSmith/krawala#readme",
   "engines": {
-    "node": "6.9.1"
-  },
-  "devDependencies": {
-    "eslintrc": "JakeSidSmith/eslintrc.git#v0.0.2"
+    "node": "6.10.3"
   },
   "dependencies": {
     "cheerio": "=0.22.0",
+    "jargs": "0.3.3",
     "js-yaml": "=3.7.0",
     "parse-domain": "=1.0.0",
     "superagent": "=3.1.0",
+    "typescript": "2.5.3",
     "underscore": "=1.8.3",
     "url-parse": "=1.1.7",
     "word-count": "=0.2.2",
     "yargs": "=6.5.0"
+  },
+  "devDependencies": {
+    "eslintrc": "JakeSidSmith/eslintrc.git#v0.0.2",
+    "tslint": "5.7.0",
+    "tslint-eslint-rules": "4.1.1"
   }
 }

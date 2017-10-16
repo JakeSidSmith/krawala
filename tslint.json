@@ -1,0 +1,45 @@
+
+{
+  "extends": [
+    "tslint:recommended",
+    "tslint-eslint-rules"
+  ],
+  "rules": {
+    "ter-indent": [2, 2, { "SwitchCase": 1, "outerIIFEBody": 1, "MemberExpression": 1, "ArrayExpression": 1, "ObjectExpression": 1 }],
+    "quotemark": [2, "single"],
+    "linebreak-style": 2,
+    "semicolon": [2, "always"],
+    "ter-max-len": [2, 120, 2, { "ignoreComments": true } ],
+    "indent": [2, "spaces"],
+    "trailing-comma": [2, {"multiline": "never", "singleline": "never"}],
+    "space-before-function-paren": [2, "always"],
+
+    "triple-equals": 2,
+    "no-constant-condition": 2,
+    "no-console": 2,
+    "no-debugger": 2,
+    "no-extra-boolean-cast": 2,
+    "no-irregular-whitespace": 2,
+    "no-multi-spaces": 2,
+    "no-consecutive-blank-lines": 2,
+    "no-eval": 2,
+    "no-shadowed-variable": 2,
+    "no-trailing-whitespace": 2,
+    "no-extra-semi": 2,
+
+    "radix": 2,
+    "curly": 2,
+    "no-switch-case-fall-through": 2,
+    "switch-default": 2,
+    "eofline": 2,
+
+    "no-var-keyword": 2,
+    "no-unused-expression": 2,
+    "no-unused-variable": 2,
+    "no-use-before-declare": 2,
+
+    "object-literal-sort-keys": false,
+
+    "interface-name": false
+  }
+}
