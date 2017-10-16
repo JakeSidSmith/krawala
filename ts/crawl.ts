@@ -20,7 +20,7 @@ export const crawl = (tree: Tree) => {
     url,
     depth: parseInt(depth, 10),
     format,
-    sequence,
+    sequence: interval && typeof interval === 'string' ? true : sequence,
     interval,
     wait
   };
