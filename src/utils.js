@@ -8,7 +8,7 @@
   function error (message) {
     if (typeof process === 'object') {
       console.error(message);
-      process.exit(1); // eslint-disable-line no-undef
+      process.exit(1);
     } else {
       throw new Error(message);
     }
