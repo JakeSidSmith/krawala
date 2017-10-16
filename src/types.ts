@@ -20,6 +20,7 @@ export type Meta = Partial<{
 }>
 
 export interface Crawlable {
+  url: string;
   resolved: string;
   failed: boolean;
   internal: boolean;
@@ -27,24 +28,28 @@ export interface Crawlable {
   type: string | null;
 }
 
-export type Link = Partial<{
-  rel: string;
-  type: string;
-  href: string;
-}> & Crawlable
+export interface Link extends Crawlable {
+  attributes: Partial<{
+    rel: string;
+    type: string;
+    href: string;
+  }>
+}
 
-export type Script = Partial<{
-  type: string;
-  src: string;
-}> & Crawlable
+export interface Script extends Crawlable {
+  attributes: Partial<{
+    type: string;
+    src: string;
+  }>
+}
 
-export type Image = Partial<{
-  src: string;
-}> & Crawlable
+export interface Image extends Crawlable {
+  attributes: Partia<{
+    src: string;
+  }>
+}
 
-export type Result = {
-  url: string;
-} & Partial<{
+export type Page = Crawlable & Partial<{
   charset: string;
   title: string;
   wordCount: number;
@@ -54,4 +59,4 @@ export type Result = {
   scripts: Script[];
   images: Image[];
   hrefs: Crawlable[];
-}> & Crawlable
+}>
