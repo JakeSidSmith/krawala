@@ -36,7 +36,7 @@ export type Link = Partial<{
 export type Script = Partial<{
   type: string;
   src: string;
-}>
+}> & Crawlable
 
 export type Image = Partial<{
   src: string;
