@@ -1,6 +1,7 @@
 declare module 'word-count' {
 
-  type wordCount = (input: string) => number;
+  function wordCount (input: string): number;
 
   export = wordCount;
+
 }
