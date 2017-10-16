@@ -6,6 +6,6 @@ rm -rf dist/
 
 mkdir -p dist/
 
-tsc --project 'ts/tsconfig.json'
+tsc --project 'src/tsconfig.json'
 
 chmod +x 'dist/cli.js'
