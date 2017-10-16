@@ -2,9 +2,9 @@
   "name": "krawala",
   "version": "0.0.0",
   "description": "Simple javascript web-crawler with command line interface",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "bin": {
-    "krawala": "src/cli.js"
+    "krawala": "dist/cli.js"
   },
   "scripts": {
     "dist": "./scripts/dist",
