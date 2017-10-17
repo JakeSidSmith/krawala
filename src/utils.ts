@@ -130,7 +130,7 @@ export const groupHrefs = (hrefs: string[], url: string, baseUrl: string) => {
       return 'email';
     }
 
-    return isSameDomain(href.url, baseUrl) ? 'internal' : 'external';
+    return isSameDomain(href.resolved, baseUrl) ? 'internal' : 'external';
   });
 }
 
