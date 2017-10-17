@@ -1,7 +1,7 @@
 import { Tree } from 'jargs';
 import * as request from 'superagent';
 import { Crawlable, Crawled, Options, Page, Progress, RequiredOptions } from './types';
-import { isSameDomain, resolveUrl, updateProgress, validateBaseUrl } from './utils';
+import { collectData, isSameDomain, resolveUrl, updateProgress, validateBaseUrl } from './utils';
 
 let options: Options;
 const queue: Array<Crawlable & Partial<Crawled>> = [];
@@ -47,7 +47,7 @@ const crawlNode = (node: Crawlable & Partial<Crawled>, then?: () => void) => {
         node.status = response.status;
 
         if (node.internal && response.type === 'text/html' && response.text) {
-          collectData();
+          collectData(node as Crawled, response.text, options.resolved);
         }
       }
 

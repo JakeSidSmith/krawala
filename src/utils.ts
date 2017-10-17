@@ -5,7 +5,7 @@ import * as readline from 'readline';
 import * as _ from 'underscore';
 import * as parseUrl from 'url-parse';
 import * as wordCount from 'word-count';
-import { Options, Progress } from './types';
+import { Crawled, Options, Page, Progress } from './types';
 
 const PROGRESS_LINES = 8;
 const PADDING = '                ';
@@ -110,15 +110,14 @@ export const updateProgress = (options: Options, progress: Progress, currentTask
 }
 
 export const groupHrefs = (hrefs: string[], url: string, baseUrl: string) => {
-  return _.chain(hrefs)
-  .groupBy(_.identity)
-  .map((values, key) => ({
-    url: values[0],
-    resolved: resolveUrl(values[0], url),
+  const groupedHrefs = _.groupBy(hrefs, _.identity);
+  const mappedHrefs = _.sortBy(_.map(groupedHrefs, (values, key) => ({
+    url: key,
+    resolved: resolveUrl(key, url),
     references: values.length
-  }))
-  .sortBy('url')
-  .groupBy((href) => {
+  })), 'url');
+
+  return _.groupBy(mappedHrefs, (href): string => {
     if (href.url.indexOf('#') === 0) {
       return 'samePage';
     }
@@ -132,16 +131,15 @@ export const groupHrefs = (hrefs: string[], url: string, baseUrl: string) => {
     }
 
     return isSameDomain(href.url, baseUrl) ? 'internal' : 'external';
-  })
-  .value();
+  });
 }
 
-export const collectData = (text: string, url: string, baseUrl: string) => {
+export const collectData = (node: Crawled & Partial<Page>, text: string, baseUrl: string) => {
   const $ = cheerio.load(text);
 
   const hrefs = $('a[href]').toArray().map((element) => $(element).attr('href'));
 
-  const groupedHrefs = groupHrefs(hrefs, url, baseUrl);
+  const groupedHrefs = groupHrefs(hrefs, node.resolved, baseUrl);
 
   return {
     title: $('title').text() || null,
@@ -151,10 +149,12 @@ export const collectData = (text: string, url: string, baseUrl: string) => {
     links: _.chain($('link[rel]').toArray()).map((element) => element.attribs).value(),
     scripts: _.chain($('script[src]').toArray()).map((element) => element.attribs).value(),
     images: _.chain($('img[src]').toArray()).map((element) => element.attribs).value(),
-    h1: $('h1').first().text() || null,
-    h2: $('h2').first().text() || null,
-    h3: $('h3').first().text() || null,
-    p: $('p').first().text() || null,
+    content: {
+      h1: $('h1').first().text() || null,
+      h2: $('h2').first().text() || null,
+      h3: $('h3').first().text() || null,
+      p: $('p').first().text() || null
+    },
     hrefs: {
       internal: groupedHrefs.internal || [],
       external: groupedHrefs.external || [],

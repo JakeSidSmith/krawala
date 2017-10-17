@@ -22,13 +22,6 @@ export interface Progress {
   progressMade: boolean;
 }
 
-export type Content = Partial<{
-  h1: string;
-  h2: string;
-  h3: string;
-  p: string;
-}>
-
 export type Meta = Partial<{
   name: string;
   content: string;
@@ -68,10 +61,17 @@ export interface Image extends Crawled {
   }>
 }
 
+export type Content = Partial<{
+  h1: string | null;
+  h2: string | null;
+  h3: string | null;
+  p: string | null;
+}>
+
 export type Page = Crawled & Partial<{
-  charset: string;
-  title: string;
-  wordCount: number;
+  charset: string | null;
+  title: string | null;
+  wordCount: number | null;
   content: Content;
   meta: Meta[];
   links: Link[];

@@ -4,4 +4,7 @@ declare module 'word-count' {
 
   export = wordCount;
 
+  namespace wordCount {
+  }
+
 }
