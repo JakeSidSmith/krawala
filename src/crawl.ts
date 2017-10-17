@@ -8,33 +8,32 @@ const queue: Array<Crawlable & Partial<Crawled>> = [];
 const pages: Array<Crawlable & Partial<Page>> = [];
 const progress: Progress = {
   depth: 0,
-  maxCrawled: 0,
-  crawled: 0,
+  urlsToCrawl: [],
+  urlsCrawled: [],
   failed: 0,
   progressMade: false
 };
 
 const enqueue = (node: Crawlable) => {
-  progress.maxCrawled += 1;
+  progress.urlsToCrawl.push(node.resolved);
   queue.push(node);
 };
 
 const crawlNode = (node: Crawlable & Partial<Crawled>, then?: () => void) => {
-  node.resolved = resolveUrl(node.url);
   node.internal = isSameDomain(node.resolved, options.resolved);
 
   if (node.depth > progress.depth) {
     progress.depth = node.depth;
   }
 
-  updateProgress(progress, options, `Crawling: ${node.resolved}`);
+  updateProgress(options, progress, `Crawling: ${node.resolved}`);
 
   request
     .get(node.resolved)
     .accept('text/html')
     .send()
     .end((error, response) => {
-      progress.crawled += 1;
+      progress.urlsCrawled.push(progress.urlsToCrawl.slice(progress.urlsToCrawl.indexOf(node.resolved), 1)[0]);
 
       if (error) {
         progress.failed += 1;
@@ -42,9 +41,15 @@ const crawlNode = (node: Crawlable & Partial<Crawled>, then?: () => void) => {
         node.failed = true,
         node.type = error.type || null,
         node.status = error.status || null
-      } else if (response.type === 'text/html' && response.text) {
+      } else if (node.internal && response.type === 'text/html' && response.text) {
 
+      } else {
+        node.failed = false;
+        node.type = response.type;
+        node.status = response.status;
       }
+
+      updateProgress(options, progress, `Crawled:  ${node.resolved}`);
     });
 };
 
@@ -86,7 +91,7 @@ export const crawl = (tree: Tree & RequiredOptions) => {
     wait
   };
 
-  pages.push({url, depth: 0});
+  pages.push({url, depth: 0, resolved: resolveUrl(url)});
   enqueue(pages[pages.length - 1]);
 
   crawlQueue();

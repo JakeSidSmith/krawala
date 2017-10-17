@@ -87,14 +87,14 @@ export const createProgressMessage = (options: Options, progress: Progress, curr
 --------------------- Progress ---------------------
 
 Depth:  ${padLeft(progress.depth)} / ${options.depth}
-Urls:   ${padLeft(progress.crawled)} / ${progress.maxCrawled}
+Urls:   ${padLeft(progress.urlsCrawled.length)} / ${progress.urlsToCrawl.length}
 Failed: ${padLeft(progress.failed)}
 ${currentTask}
 
 `;
 }
 
-export const updateProgress = (progress: Progress, options: Options, currentTask: string) => {
+export const updateProgress = (options: Options, progress: Progress, currentTask: string) => {
   if (typeof process === 'object') {
     if (progress.progressMade) {
       clearProgress();

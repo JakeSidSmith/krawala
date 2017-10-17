@@ -16,8 +16,8 @@ export interface Options {
 
 export interface Progress {
   depth: number;
-  maxCrawled: number;
-  crawled: number;
+  urlsToCrawl: string[];
+  urlsCrawled: string[];
   failed: number;
   progressMade: boolean;
 }
@@ -37,10 +37,10 @@ export type Meta = Partial<{
 export interface Crawlable {
   depth: number;
   url: string;
+  resolved: string;
 }
 
 export interface Crawled extends Crawlable {
-  resolved: string;
   internal: boolean;
   failed: boolean;
   status: number;
