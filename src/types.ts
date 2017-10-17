@@ -35,6 +35,7 @@ export type Meta = Partial<{
 }>
 
 export interface Crawlable {
+  depth: number;
   url: string;
 }
 

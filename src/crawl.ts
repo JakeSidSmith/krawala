@@ -1,4 +1,5 @@
 import { Tree } from 'jargs';
+import * as request from 'superagent';
 import { Crawlable, Crawled, Options, Page, Progress, RequiredOptions } from './types';
 import { isSameDomain, resolveUrl, updateProgress, validateBaseUrl } from './utils';
 
@@ -14,6 +15,7 @@ const progress: Progress = {
 };
 
 const enqueue = (node: Crawlable) => {
+  progress.maxCrawled += 1;
   queue.push(node);
 };
 
@@ -21,7 +23,29 @@ const crawlNode = (node: Crawlable & Partial<Crawled>, then?: () => void) => {
   node.resolved = resolveUrl(node.url);
   node.internal = isSameDomain(node.resolved, options.resolved);
 
+  if (node.depth > progress.depth) {
+    progress.depth = node.depth;
+  }
+
   updateProgress(progress, options, `Crawling: ${node.resolved}`);
+
+  request
+    .get(node.resolved)
+    .accept('text/html')
+    .send()
+    .end((error, response) => {
+      progress.crawled += 1;
+
+      if (error) {
+        progress.failed += 1;
+
+        node.failed = true,
+        node.type = error.type || null,
+        node.status = error.status || null
+      } else if (response.type === 'text/html' && response.text) {
+
+      }
+    });
 };
 
 const crawlQueue = () => {
@@ -62,7 +86,7 @@ export const crawl = (tree: Tree & RequiredOptions) => {
     wait
   };
 
-  pages.push({url});
+  pages.push({url, depth: 0});
   enqueue(pages[pages.length - 1]);
 
   crawlQueue();
