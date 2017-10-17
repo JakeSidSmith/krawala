@@ -6,6 +6,7 @@ export interface RequiredOptions {
 
 export interface Options {
   url: string;
+  resolved: string;
   depth: number;
   format: string;
   sequence: boolean;
@@ -14,7 +15,6 @@ export interface Options {
 }
 
 export interface Progress {
-  maxDepth: number;
   depth: number;
   maxCrawled: number;
   crawled: number;
@@ -36,14 +36,17 @@ export type Meta = Partial<{
 
 export interface Crawlable {
   url: string;
+}
+
+export interface Crawled extends Crawlable {
   resolved: string;
-  failed: boolean;
   internal: boolean;
+  failed: boolean;
   status: number;
   type: string | null;
 }
 
-export interface Link extends Crawlable {
+export interface Link extends Crawled {
   attributes: Partial<{
     rel: string;
     type: string;
@@ -51,20 +54,20 @@ export interface Link extends Crawlable {
   }>
 }
 
-export interface Script extends Crawlable {
+export interface Script extends Crawled {
   attributes: Partial<{
     type: string;
     src: string;
   }>
 }
 
-export interface Image extends Crawlable {
+export interface Image extends Crawled {
   attributes: Partia<{
     src: string;
   }>
 }
 
-export type Page = Crawlable & Partial<{
+export type Page = Crawled & Partial<{
   charset: string;
   title: string;
   wordCount: number;
@@ -73,5 +76,5 @@ export type Page = Crawlable & Partial<{
   links: Link[];
   scripts: Script[];
   images: Image[];
-  hrefs: Crawlable[];
+  hrefs: Crawled[];
 }>

@@ -2,7 +2,7 @@ import * as yaml from 'js-yaml';
 import * as parseDomain from 'parse-domain';
 import * as readline from 'readline';
 import * as parseUrl from 'url-parse';
-import { Progress } from './types';
+import { Options, Progress } from './types';
 
 const PROGRESS_LINES = 7;
 const PADDING = '                ';
@@ -32,7 +32,7 @@ export const isSameDomain = (url: string, parentUrl: string): boolean => {
     parentDomainInfo.tld === domainInfo.tld;
 }
 
-export const resolveUrl = (url: string, parentUrl: string) => {
+export const resolveUrl = (url: string, parentUrl?: string) => {
   return parseUrl(url, parentUrl).href;
 }
 
@@ -80,25 +80,25 @@ export const clearProgress = () => {
   }
 }
 
-export const createProgressMessage = (progress: Progress, currentTask: string) => {
+export const createProgressMessage = (options: Options, progress: Progress, currentTask: string) => {
   return (
     `--------------------- Progress ---------------------
 
 
-    Depth:  ${padLeft(progress.maxDepth)} / ${progress.depth}
+    Depth:  ${padLeft(options.depth)} / ${progress.depth}
     Urls:   ${padLeft(progress.maxCrawled)} / ${progress.crawled}
     Failed: ${padLeft(progress.failed)}
     ${currentTask}`
   );
 }
 
-export const updateProgress = (progress: Progress, currentTask: string) => {
+export const updateProgress = (progress: Progress, options: Options, currentTask: string) => {
   if (typeof process === 'object') {
     if (progress.progressMade) {
       clearProgress();
     }
 
-    process.stderr.write(createProgressMessage(progress, currentTask));
+    process.stderr.write(createProgressMessage(options, progress, currentTask));
 
     progress.progressMade = true;
   }
