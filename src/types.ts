@@ -12,6 +12,7 @@ export interface Options {
   sequence: boolean;
   interval?: number;
   wait: boolean;
+  callback?: (output: string) => any;
 }
 
 export interface Progress {
@@ -22,10 +23,12 @@ export interface Progress {
   progressMade: boolean;
 }
 
-export type Meta = Partial<{
-  name: string;
-  content: string;
-}>
+export interface Meta {
+  attributes: Partial<{
+    name: string;
+    content: string;
+  }>
+}
 
 export interface Crawlable {
   depth: number;
@@ -40,7 +43,7 @@ export interface Crawled extends Crawlable {
   type: string | null;
 }
 
-export interface Link extends Crawled {
+export interface Link {
   attributes: Partial<{
     rel: string;
     type: string;
@@ -48,14 +51,14 @@ export interface Link extends Crawled {
   }>
 }
 
-export interface Script extends Crawled {
+export interface Script {
   attributes: Partial<{
     type: string;
     src: string;
   }>
 }
 
-export interface Image extends Crawled {
+export interface Image {
   attributes: Partial<{
     src: string;
   }>
@@ -68,7 +71,7 @@ export type Content = Partial<{
   p: string | null;
 }>
 
-export type Page = Crawled & Partial<{
+export type PageData = Partial<{
   charset: string | null;
   title: string | null;
   wordCount: number | null;
@@ -77,5 +80,13 @@ export type Page = Crawled & Partial<{
   links: Link[];
   scripts: Script[];
   images: Image[];
-  hrefs: Crawled[];
+  hrefs: {
+    internal: Array<Partial<Crawled>>;
+    external: Array<Partial<Crawled>>;
+    samePage: Array<Partial<Crawled>>;
+    email: Array<Partial<Crawled>>;
+    phone: Array<Partial<Crawled>>;
+  };
 }>
+
+export type Page = Crawled & PageData;

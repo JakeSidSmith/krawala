@@ -5,7 +5,18 @@ import * as readline from 'readline';
 import * as _ from 'underscore';
 import * as parseUrl from 'url-parse';
 import * as wordCount from 'word-count';
-import { Crawled, Options, Page, Progress } from './types';
+import {
+  Crawlable,
+  Crawled,
+  Image,
+  Link,
+  Meta,
+  Options,
+  Page,
+  PageData,
+  Progress,
+  Script
+} from './types';
 
 const PROGRESS_LINES = 8;
 const PADDING = '                ';
@@ -61,16 +72,6 @@ export const validateBaseUrl = (url: string): true | void => {
   }
 
   return true;
-}
-
-export const getOutput = (scope: {[index: string]: any}): string => {
-  switch (scope.format) {
-    case 'yaml':
-      return yaml.safeDump(scope.json, {indent: 2});
-    case 'json':
-    default:
-      return JSON.stringify(scope.json, null, 2) + '\n';
-  }
 }
 
 export const padLeft = (value: string | number) => {
@@ -134,7 +135,7 @@ export const groupHrefs = (hrefs: string[], url: string, baseUrl: string) => {
   });
 }
 
-export const collectData = (node: Crawled & Partial<Page>, text: string, baseUrl: string) => {
+export const collectData = (node: Crawled & Partial<Page>, text: string, baseUrl: string): PageData => {
   const $ = cheerio.load(text);
 
   const hrefs = $('a[href]').toArray().map((element) => $(element).attr('href'));
@@ -145,10 +146,10 @@ export const collectData = (node: Crawled & Partial<Page>, text: string, baseUrl
     title: $('title').text() || null,
     wordCount: wordCount($('body').text()),
     charset: $('meta[charset]').attr('charset') || null,
-    meta: _.chain($('meta[name],meta[property]').toArray()).map((element) => element.attribs).value(),
-    links: _.chain($('link[rel]').toArray()).map((element) => element.attribs).value(),
-    scripts: _.chain($('script[src]').toArray()).map((element) => element.attribs).value(),
-    images: _.chain($('img[src]').toArray()).map((element) => element.attribs).value(),
+    meta: _.chain($('meta[name],meta[property]').toArray()).map((element) => ({attributes: element.attribs})).value(),
+    links: _.chain($('link[rel]').toArray()).map((element) => ({attributes: element.attribs})).value(),
+    scripts: _.chain($('script[src]').toArray()).map((element) => ({attributes: element.attribs})).value(),
+    images: _.chain($('img[src]').toArray()).map((element) => ({attributes: element.attribs})).value(),
     content: {
       h1: $('h1').first().text() || null,
       h2: $('h2').first().text() || null,
@@ -163,4 +164,22 @@ export const collectData = (node: Crawled & Partial<Page>, text: string, baseUrl
       phone: groupedHrefs.phone || []
     }
   };
+}
+
+export const getOutput = (options: Options, pages: {[index: string]: any} | any[]): string => {
+  switch (options.format) {
+    case 'yaml':
+      return yaml.safeDump(pages, {indent: 2});
+    case 'json':
+    default:
+      return JSON.stringify(pages, null, 2) + '\n';
+  }
+}
+
+export const complete = (options: Options, pages: Array<Crawlable & Partial<Page>>) => {
+  if (typeof process === 'object' && typeof process.stdout !== 'undefined') {
+    process.stdout.write(getOutput(options, pages));
+  } else if (typeof options.callback === 'function') {
+    options.callback(getOutput(options, pages));
+  }
 }

@@ -1,7 +1,22 @@
 import { Tree } from 'jargs';
 import * as request from 'superagent';
-import { Crawlable, Crawled, Options, Page, Progress, RequiredOptions } from './types';
-import { collectData, isSameDomain, resolveUrl, updateProgress, validateBaseUrl } from './utils';
+import * as _ from 'underscore';
+import {
+  Crawlable,
+  Crawled,
+  Options,
+  Page,
+  Progress,
+  RequiredOptions
+} from './types';
+import {
+  collectData,
+  complete,
+  isSameDomain,
+  resolveUrl,
+  updateProgress,
+  validateBaseUrl
+} from './utils';
 
 let options: Options;
 const queue: Array<Crawlable & Partial<Crawled>> = [];
@@ -20,8 +35,6 @@ const enqueue = (node: Crawlable) => {
 };
 
 const crawlNode = (node: Crawlable & Partial<Crawled>, then?: () => void) => {
-  progress.urlsCrawled.push(node.resolved);
-
   node.internal = isSameDomain(node.resolved, options.resolved);
 
   if (node.depth > progress.depth) {
@@ -35,6 +48,8 @@ const crawlNode = (node: Crawlable & Partial<Crawled>, then?: () => void) => {
     .accept('text/html')
     .send()
     .end((error, response) => {
+      progress.urlsCrawled.push(node.resolved);
+
       if (error) {
         progress.failed.push(node.resolved);
 
@@ -47,7 +62,9 @@ const crawlNode = (node: Crawlable & Partial<Crawled>, then?: () => void) => {
         node.status = response.status;
 
         if (node.internal && response.type === 'text/html' && response.text) {
-          collectData(node as Crawled, response.text, options.resolved);
+          const data = collectData(node as Crawled, response.text, options.resolved);
+
+          _.extend(node, data);
         }
       }
 
@@ -55,6 +72,10 @@ const crawlNode = (node: Crawlable & Partial<Crawled>, then?: () => void) => {
 
       if (typeof then === 'function') {
         then();
+      }
+
+      if (progress.urlsToCrawl.length === progress.urlsCrawled.length) {
+        complete(options, pages);
       }
     });
 };
@@ -103,7 +124,7 @@ export const crawl = (tree: Tree & RequiredOptions) => {
     wait
   };
 
-  pages.push({url, depth: 0, resolved: resolveUrl(url)});
+  pages.push({url, resolved: resolveUrl(url), depth: 0});
   enqueue(pages[pages.length - 1]);
 
   crawlQueue();
