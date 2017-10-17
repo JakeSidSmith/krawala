@@ -13,6 +13,7 @@ import {
   Link,
   Meta,
   Options,
+  Output,
   Page,
   PageData,
   Progress,
@@ -177,7 +178,7 @@ export const getOutput = (options: Options, pages: {[index: string]: any} | any[
   }
 }
 
-export const complete = (options: Options, pages: Array<Crawlable & Partial<Page>>) => {
+export const complete = (options: Options, pages: Output) => {
   if (typeof process === 'object' && typeof process.stdout !== 'undefined') {
     process.stdout.write(getOutput(options, pages));
   } else if (typeof options.callback === 'function') {

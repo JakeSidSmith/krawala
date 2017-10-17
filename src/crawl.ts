@@ -21,6 +21,7 @@ import {
 let options: Options;
 const queue: Array<Crawlable & Partial<Crawled>> = [];
 const pages: Array<Crawlable & Partial<Page>> = [];
+const externalPages: Array<Crawlable & Partial<Crawled>> = [];
 const progress: Progress = {
   depth: 0,
   urlsToCrawl: [],
@@ -69,7 +70,7 @@ const crawlNode = (node: Crawlable & Partial<Crawled>) => {
           const page = node as Page;
 
           if (node.depth < options.depth) {
-            if (page.hrefs && page.hrefs.internal) {
+            if (page.hrefs.internal) {
               page.hrefs.internal.forEach((subPage) => {
                 const { url, resolved } = subPage;
 
@@ -80,23 +81,28 @@ const crawlNode = (node: Crawlable & Partial<Crawled>) => {
               });
             }
 
-            if (page.hrefs && page.hrefs.external) {
-              page.hrefs.external.forEach((externalPage) => {
+            if (page.hrefs.external) {
+              page.hrefs.external.forEach((externalPage, index) => {
                 const { url, resolved } = externalPage;
 
                 if (url && resolved && progress.urlsToCrawl.indexOf(resolved) < 0) {
-                  enqueue(externalPage as Crawlable);
+                  externalPages.push({url, resolved, depth: node.depth + 1});
+                  enqueue(externalPages[externalPages.length - 1]);
                 }
               });
             }
           }
+        } else {
+          node.failed = false;
+          node.type = response.type;
+          node.status = response.status;
         }
       }
 
       updateProgress(options, progress, `Crawled:  ${node.resolved}`);
 
       if (progress.urlsToCrawl.length === progress.urlsCrawled.length) {
-        complete(options, pages);
+        complete(options, {pages, externalPages});
       } else if (options.interval) {
         setTimeout(crawlQueue, options.interval);
       } else {

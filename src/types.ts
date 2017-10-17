@@ -75,7 +75,17 @@ export type Content = Partial<{
   p: string | null;
 }>
 
-export type PageData = Partial<{
+export interface Hrefs {
+  hrefs: Partial<{
+    internal: Array<Partial<Crawled> & Href>;
+    external: Array<Partial<Crawled> & Href>;
+    samePage: Array<Partial<Crawled> & Href>;
+    email: Array<Partial<Crawled> & Href>;
+    phone: Array<Partial<Crawled> & Href>;
+  }>
+}
+
+export type PageData = Hrefs & Partial<{
   charset: string | null;
   title: string | null;
   wordCount: number | null;
@@ -84,13 +94,11 @@ export type PageData = Partial<{
   links: Link[];
   scripts: Script[];
   images: Image[];
-  hrefs: {
-    internal: Array<Partial<Crawled> & Href>;
-    external: Array<Partial<Crawled> & Href>;
-    samePage: Array<Partial<Crawled> & Href>;
-    email: Array<Partial<Crawled> & Href>;
-    phone: Array<Partial<Crawled> & Href>;
-  };
 }>
 
 export type Page = Crawled & PageData;
+
+export interface Output {
+  pages: Crawlable[];
+  externalPages: Crawlable[];
+}
