@@ -31,9 +31,9 @@ export interface Meta {
 }
 
 export interface Crawlable {
-  depth: number;
   url: string;
   resolved: string;
+  depth: number;
 }
 
 export interface Crawled extends Crawlable {
@@ -71,6 +71,8 @@ export interface Image {
 }
 
 export interface Href {
+  url: string;
+  resolved: string;
   references: number;
 }
 
@@ -82,13 +84,13 @@ export type Content = Partial<{
 }>
 
 export interface Hrefs {
-  hrefs: Partial<{
-    internal: Array<Partial<Crawled> & Href>;
-    external: Array<Partial<Crawled> & Href>;
-    samePage: Array<Partial<Crawled> & Href>;
-    email: Array<Partial<Crawled> & Href>;
-    phone: Array<Partial<Crawled> & Href>;
-  }>
+  hrefs: {
+    internal: Href[];
+    external: Href[];
+    samePage: Href[];
+    email: Href[];
+    phone: Href[];
+  }
 }
 
 export type PageData = Hrefs & Partial<{

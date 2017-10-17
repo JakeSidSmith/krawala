@@ -70,27 +70,23 @@ const crawlNode = (node: Crawlable & Partial<Crawled>) => {
           const page = node as Page;
 
           if (node.depth < options.depth) {
-            if (page.hrefs.internal) {
-              page.hrefs.internal.forEach((subPage) => {
-                const { url, resolved } = subPage;
+            page.hrefs.internal.forEach((subPage) => {
+              const { url, resolved } = subPage;
 
-                if (url && resolved && progress.urlsToCrawl.indexOf(resolved) < 0) {
-                  pages.push({url, resolved, depth: node.depth + 1});
-                  enqueue(pages[pages.length - 1]);
-                }
-              });
-            }
+              if (url && resolved && progress.urlsToCrawl.indexOf(resolved) < 0) {
+                pages.push({url, resolved, depth: node.depth + 1});
+                enqueue(pages[pages.length - 1]);
+              }
+            });
 
-            if (page.hrefs.external) {
-              page.hrefs.external.forEach((externalPage, index) => {
-                const { url, resolved } = externalPage;
+            page.hrefs.external.forEach((externalPage, index) => {
+              const { url, resolved } = externalPage;
 
-                if (url && resolved && progress.urlsToCrawl.indexOf(resolved) < 0) {
-                  externalPages.push({url, resolved, depth: node.depth + 1});
-                  enqueue(externalPages[externalPages.length - 1]);
-                }
-              });
-            }
+              if (url && resolved && progress.urlsToCrawl.indexOf(resolved) < 0) {
+                externalPages.push({url, resolved, depth: node.depth + 1});
+                enqueue(externalPages[externalPages.length - 1]);
+              }
+            });
           }
         } else {
           node.failed = false;
