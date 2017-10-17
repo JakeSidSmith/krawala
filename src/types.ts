@@ -62,7 +62,7 @@ export interface Script extends Crawled {
 }
 
 export interface Image extends Crawled {
-  attributes: Partia<{
+  attributes: Partial<{
     src: string;
   }>
 }
