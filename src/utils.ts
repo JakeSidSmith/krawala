@@ -4,7 +4,7 @@ import * as readline from 'readline';
 import * as parseUrl from 'url-parse';
 import { Options, Progress } from './types';
 
-const PROGRESS_LINES = 7;
+const PROGRESS_LINES = 8;
 const PADDING = '                ';
 
 export const error = (message: string): void => {
@@ -83,15 +83,15 @@ export const clearProgress = () => {
 }
 
 export const createProgressMessage = (options: Options, progress: Progress, currentTask: string) => {
-  return (
-    `--------------------- Progress ---------------------
+  return `
+--------------------- Progress ---------------------
 
+Depth:  ${padLeft(progress.depth)} / ${options.depth}
+Urls:   ${padLeft(progress.crawled)} / ${progress.maxCrawled}
+Failed: ${padLeft(progress.failed)}
+${currentTask}
 
-    Depth:  ${padLeft(options.depth)} / ${progress.depth}
-    Urls:   ${padLeft(progress.maxCrawled)} / ${progress.crawled}
-    Failed: ${padLeft(progress.failed)}
-    ${currentTask}`
-  );
+`;
 }
 
 export const updateProgress = (progress: Progress, options: Options, currentTask: string) => {
