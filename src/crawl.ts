@@ -1,20 +1,6 @@
 import { Tree } from 'jargs';
+import { Options, RequiredOptions } from './types';
 import { validateBaseUrl } from './utils';
-
-export interface RequiredOptions {
-  kwargs: {
-    url: string;
-  }
-}
-
-interface Options {
-  url: string;
-  depth: number;
-  format: string;
-  sequence: boolean;
-  interval?: number;
-  wait: boolean;
-}
 
 let options: Options;
 const queue = [];

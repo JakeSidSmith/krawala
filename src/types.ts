@@ -1,3 +1,18 @@
+export interface RequiredOptions {
+  kwargs: {
+    url: string;
+  }
+}
+
+export interface Options {
+  url: string;
+  depth: number;
+  format: string;
+  sequence: boolean;
+  interval?: number;
+  wait: boolean;
+}
+
 export interface Progress {
   maxDepth: number;
   depth: number;
