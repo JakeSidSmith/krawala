@@ -68,8 +68,8 @@ export const getOutput = (scope: {[index: string]: any}): string => {
   }
 }
 
-export const padLeft = (value: string) => {
-  value = PADDING + value;
+export const padLeft = (value: string | number) => {
+  value = PADDING + value.toString();
   return value.substring(value.length - PADDING.length);
 }
 
@@ -85,9 +85,9 @@ export const createProgressMessage = (progress: Progress, currentTask: string) =
     `--------------------- Progress ---------------------
 
 
-    Depth:  ${progress.maxDepth} / ${progress.depth}
-    Urls:   ${progress.maxCrawled} / ${progress.crawled}
-    Failed: ${progress.failed}
+    Depth:  ${padLeft(progress.maxDepth)} / ${progress.depth}
+    Urls:   ${padLeft(progress.maxCrawled)} / ${progress.crawled}
+    Failed: ${padLeft(progress.failed)}
     ${currentTask}`
   );
 }
