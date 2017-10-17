@@ -8,6 +8,7 @@ import * as wordCount from 'word-count';
 import {
   Crawlable,
   Crawled,
+  Href,
   Image,
   Link,
   Meta,

@@ -64,6 +64,10 @@ export interface Image {
   }>
 }
 
+export interface Href {
+  references: number;
+}
+
 export type Content = Partial<{
   h1: string | null;
   h2: string | null;
@@ -81,11 +85,11 @@ export type PageData = Partial<{
   scripts: Script[];
   images: Image[];
   hrefs: {
-    internal: Array<Partial<Crawled>>;
-    external: Array<Partial<Crawled>>;
-    samePage: Array<Partial<Crawled>>;
-    email: Array<Partial<Crawled>>;
-    phone: Array<Partial<Crawled>>;
+    internal: Array<Partial<Crawled> & Href>;
+    external: Array<Partial<Crawled> & Href>;
+    samePage: Array<Partial<Crawled> & Href>;
+    email: Array<Partial<Crawled> & Href>;
+    phone: Array<Partial<Crawled> & Href>;
   };
 }>
 

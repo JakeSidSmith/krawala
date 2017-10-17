@@ -34,7 +34,7 @@ const enqueue = (node: Crawlable) => {
   queue.push(node);
 };
 
-const crawlNode = (node: Crawlable & Partial<Crawled>, then?: () => void) => {
+const crawlNode = (node: Crawlable & Partial<Crawled>) => {
   node.internal = isSameDomain(node.resolved, options.resolved);
 
   if (node.depth > progress.depth) {
@@ -65,17 +65,30 @@ const crawlNode = (node: Crawlable & Partial<Crawled>, then?: () => void) => {
           const data = collectData(node as Crawled, response.text, options.resolved);
 
           _.extend(node, data);
+
+          const page = node as Page;
+
+          if (page.hrefs && page.hrefs.internal) {
+            page.hrefs.internal.forEach((subPage) => {
+              const { url, resolved } = subPage;
+
+              if (url && resolved) {
+                pages.push({url, resolved, depth: node.depth + 1});
+                enqueue(pages[pages.length - 1]);
+              }
+            });
+          }
         }
       }
 
       updateProgress(options, progress, `Crawled:  ${node.resolved}`);
 
-      if (typeof then === 'function') {
-        then();
-      }
-
       if (progress.urlsToCrawl.length === progress.urlsCrawled.length) {
         complete(options, pages);
+      } else if (options.interval) {
+        setTimeout(crawlQueue, options.interval);
+      } else {
+        crawlQueue();
       }
     });
 };
@@ -86,14 +99,14 @@ const crawlQueue = () => {
       const node = queue.shift();
 
       if (node) {
-        crawlNode(node, crawlQueue);
+        crawlNode(node);
       }
     }
   } else {
     const node = queue.shift();
 
     if (node) {
-      crawlNode(node, crawlQueue);
+      crawlNode(node);
     }
   }
 };
