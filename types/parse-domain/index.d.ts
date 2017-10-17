@@ -1,6 +1,6 @@
 declare module 'parse-domain' {
 
-  function parseDomain (url?: string): parseDomain.DomainInfo;
+  function parseDomain (url?: string): void | parseDomain.DomainInfo;
 
   export = parseDomain;
 

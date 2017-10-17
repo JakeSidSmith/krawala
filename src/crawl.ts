@@ -1,7 +1,10 @@
 import { Tree } from 'jargs';
 import { Crawlable, Crawled, Options, Page, Progress, RequiredOptions } from './types';
-import { isSameDomain, resolveUrl, validateBaseUrl } from './utils';
+import { isSameDomain, resolveUrl, updateProgress, validateBaseUrl } from './utils';
 
+let options: Options;
+const queue: Array<Crawlable & Partial<Crawled>> = [];
+const pages: Array<Crawlable & Partial<Page>> = [];
 const progress: Progress = {
   depth: 0,
   maxCrawled: 0,
@@ -9,9 +12,6 @@ const progress: Progress = {
   failed: 0,
   progressMade: false
 };
-let options: Options;
-const queue: Array<Crawlable & Partial<Crawled>> = [];
-const pages: Array<Crawlable & Partial<Page>> = [];
 
 const enqueue = (node: Crawlable) => {
   queue.push(node);
@@ -20,6 +20,8 @@ const enqueue = (node: Crawlable) => {
 const crawlNode = (node: Crawlable & Partial<Crawled>, then?: () => void) => {
   node.resolved = resolveUrl(node.url);
   node.internal = isSameDomain(node.resolved, options.resolved);
+
+  updateProgress(progress, options, `Crawling: ${node.resolved}`);
 };
 
 const crawlQueue = () => {

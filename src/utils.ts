@@ -28,16 +28,18 @@ export const isSameDomain = (url: string, parentUrl: string): boolean => {
   const parentDomainInfo = parseDomain(parentUrlInfo.href);
   const domainInfo = parseDomain(urlInfo.href);
 
-  return parentDomainInfo.domain === domainInfo.domain &&
-    parentDomainInfo.tld === domainInfo.tld;
+  return parentDomainInfo && domainInfo ?
+    parentDomainInfo.domain === domainInfo.domain &&
+    parentDomainInfo.tld === domainInfo.tld :
+    false;
 }
 
 export const resolveUrl = (url: string, parentUrl?: string) => {
   return parseUrl(url, parentUrl).href;
 }
 
-export const validateBaseUrl = (url?: string): true | void => {
-  if (typeof url !== 'string' || !url) {
+export const validateBaseUrl = (url: string): true | void => {
+  if (!url) {
     return error('Invalid URL. URL cannot be empty');
   }
 
