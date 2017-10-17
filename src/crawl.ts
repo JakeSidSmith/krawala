@@ -72,7 +72,7 @@ const crawlNode = (node: Crawlable & Partial<Crawled>) => {
             page.hrefs.internal.forEach((subPage) => {
               const { url, resolved } = subPage;
 
-              if (url && resolved) {
+              if (url && resolved && progress.urlsToCrawl.indexOf(resolved) < 0) {
                 pages.push({url, resolved, depth: node.depth + 1});
                 enqueue(pages[pages.length - 1]);
               }
