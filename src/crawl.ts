@@ -68,15 +68,27 @@ const crawlNode = (node: Crawlable & Partial<Crawled>) => {
 
           const page = node as Page;
 
-          if (page.hrefs && page.hrefs.internal) {
-            page.hrefs.internal.forEach((subPage) => {
-              const { url, resolved } = subPage;
+          if (node.depth < options.depth) {
+            if (page.hrefs && page.hrefs.internal) {
+              page.hrefs.internal.forEach((subPage) => {
+                const { url, resolved } = subPage;
 
-              if (url && resolved && progress.urlsToCrawl.indexOf(resolved) < 0) {
-                pages.push({url, resolved, depth: node.depth + 1});
-                enqueue(pages[pages.length - 1]);
-              }
-            });
+                if (url && resolved && progress.urlsToCrawl.indexOf(resolved) < 0) {
+                  pages.push({url, resolved, depth: node.depth + 1});
+                  enqueue(pages[pages.length - 1]);
+                }
+              });
+            }
+
+            if (page.hrefs && page.hrefs.external) {
+              page.hrefs.external.forEach((externalPage) => {
+                const { url, resolved } = externalPage;
+
+                if (url && resolved && progress.urlsToCrawl.indexOf(resolved) < 0) {
+                  enqueue(externalPage as Crawlable);
+                }
+              });
+            }
           }
         }
       }
