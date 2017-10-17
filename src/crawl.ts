@@ -10,7 +10,7 @@ const progress: Progress = {
   depth: 0,
   urlsToCrawl: [],
   urlsCrawled: [],
-  failed: 0,
+  failed: [],
   progressMade: false
 };
 
@@ -20,6 +20,8 @@ const enqueue = (node: Crawlable) => {
 };
 
 const crawlNode = (node: Crawlable & Partial<Crawled>, then?: () => void) => {
+  progress.urlsCrawled.push(node.resolved);
+
   node.internal = isSameDomain(node.resolved, options.resolved);
 
   if (node.depth > progress.depth) {
@@ -33,23 +35,27 @@ const crawlNode = (node: Crawlable & Partial<Crawled>, then?: () => void) => {
     .accept('text/html')
     .send()
     .end((error, response) => {
-      progress.urlsCrawled.push(progress.urlsToCrawl.slice(progress.urlsToCrawl.indexOf(node.resolved), 1)[0]);
-
       if (error) {
-        progress.failed += 1;
+        progress.failed.push(node.resolved);
 
         node.failed = true,
         node.type = error.type || null,
         node.status = error.status || null
-      } else if (node.internal && response.type === 'text/html' && response.text) {
-
       } else {
         node.failed = false;
         node.type = response.type;
         node.status = response.status;
+
+        if (node.internal && response.type === 'text/html' && response.text) {
+          collectData();
+        }
       }
 
       updateProgress(options, progress, `Crawled:  ${node.resolved}`);
+
+      if (typeof then === 'function') {
+        then();
+      }
     });
 };
 
@@ -61,6 +67,12 @@ const crawlQueue = () => {
       if (node) {
         crawlNode(node, crawlQueue);
       }
+    }
+  } else {
+    const node = queue.shift();
+
+    if (node) {
+      crawlNode(node, crawlQueue);
     }
   }
 };

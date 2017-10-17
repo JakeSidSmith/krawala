@@ -18,7 +18,7 @@ export interface Progress {
   depth: number;
   urlsToCrawl: string[];
   urlsCrawled: string[];
-  failed: number;
+  failed: string[];
   progressMade: boolean;
 }
 

@@ -35,6 +35,7 @@
     "@types/js-yaml": "3.9.1",
     "@types/node": "8.0.35",
     "@types/superagent": "3.5.6",
+    "@types/underscore": "1.8.3",
     "@types/url-parse": "1.1.0",
     "cheerio": "=0.22.0",
     "jargs": "0.3.3",
@@ -42,6 +43,7 @@
     "parse-domain": "=1.0.0",
     "superagent": "=3.5.0",
     "typescript": "2.5.3",
+    "underscore": "1.8.3",
     "url-parse": "=1.1.7",
     "word-count": "=0.2.2"
   },
