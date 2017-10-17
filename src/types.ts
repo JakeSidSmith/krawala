@@ -24,10 +24,10 @@ export interface Progress {
 }
 
 export interface Meta {
-  attributes: Partial<{
+  attributes: {
     name: string;
     content: string;
-  }>
+  }
 }
 
 export interface Crawlable {
@@ -43,25 +43,31 @@ export interface Crawled extends Crawlable {
   type: string | null;
 }
 
-export interface Link {
+export type Link = {
+  attributes: {
+    href: string;
+  }
+} & {
   attributes: Partial<{
     rel: string;
     type: string;
-    href: string;
   }>
 }
 
-export interface Script {
+export type Script = {
+  attributes: {
+    src: string;
+  }
+} & {
   attributes: Partial<{
     type: string;
-    src: string;
   }>
 }
 
 export interface Image {
-  attributes: Partial<{
+  attributes: {
     src: string;
-  }>
+  }
 }
 
 export interface Href {

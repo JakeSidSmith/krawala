@@ -148,10 +148,14 @@ export const collectData = (node: Crawled & Partial<Page>, text: string, baseUrl
     title: $('title').text() || null,
     wordCount: wordCount($('body').text()),
     charset: $('meta[charset]').attr('charset') || null,
-    meta: _.chain($('meta[name],meta[property]').toArray()).map((element) => ({attributes: element.attribs})).value(),
-    links: _.chain($('link[rel]').toArray()).map((element) => ({attributes: element.attribs})).value(),
-    scripts: _.chain($('script[src]').toArray()).map((element) => ({attributes: element.attribs})).value(),
-    images: _.chain($('img[src]').toArray()).map((element) => ({attributes: element.attribs})).value(),
+    meta: _.chain($('meta[name],meta[property]').toArray())
+      .map((element) => ({attributes: element.attribs} as Meta)).value(),
+    links: _.chain($('link[href]').toArray())
+      .map((element) => ({attributes: element.attribs} as Link)).value(),
+    scripts: _.chain($('script[src]').toArray())
+      .map((element) => ({attributes: element.attribs} as Script)).value(),
+    images: _.chain($('img[src]').toArray())
+      .map((element) => ({attributes: element.attribs} as Image)).value(),
     content: {
       h1: $('h1').first().text() || null,
       h2: $('h2').first().text() || null,
