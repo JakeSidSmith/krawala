@@ -22,6 +22,7 @@ import {
   validateBaseUrl
 } from './utils';
 
+const MATCHES_SUCCESS_STATUS = /^[123]/;
 const MATCHES_TEXT_HTML = /\btext\s*\/\s*html\b/i;
 
 const USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 ' +
@@ -99,21 +100,14 @@ const crawlNode = (node: PartiallyCrawled) => {
 
   updateProgress(options, progress, `Crawling: ${node.resolved}`);
 
-  request
-    .get(node.resolved, {...REQUEST_OPTIONS, timeout: options.timeout}, (error, response, body) => {
+  request(node.resolved, {...REQUEST_OPTIONS, timeout: options.timeout}, (error, response, body) => {
       progress.urlsCrawled.push(node.resolved);
 
       const status = response.statusCode;
       const contentType = response.headers['content-type'];
       const type = Array.isArray(contentType) ? `[${contentType.join(', ')}]` : contentType;
 
-      if (error) {
-        progress.failed.push(node.resolved);
-
-        node.failed = true,
-        node.type = error.type || null,
-        node.status = error.status || null
-      } else {
+      if (!error && status && MATCHES_SUCCESS_STATUS.test(status.toString())) {
         node.failed = false;
         node.type = type;
         node.status = status;
@@ -135,10 +129,15 @@ const crawlNode = (node: PartiallyCrawled) => {
           }
         } else {
           node.failed = false;
-          node.type = type;
-          node.status = status;
         }
+      } else {
+        progress.failed.push(node.resolved);
+
+        node.failed = true;
       }
+
+      node.type = type || null;
+      node.status = status || null;
 
       const crawledNode = crawled[node.resolved];
 

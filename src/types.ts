@@ -41,7 +41,7 @@ export interface Crawlable {
 
 export interface Crawled extends Crawlable {
   failed: boolean;
-  status: number;
+  status: number | null;
   type: string | string[] | null;
 }
 
