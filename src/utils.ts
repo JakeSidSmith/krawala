@@ -6,9 +6,7 @@ import * as _ from 'underscore';
 import * as parseUrl from 'url-parse';
 import * as wordCount from 'word-count';
 import {
-  Crawlable,
   Crawled,
-  Href,
   Image,
   Link,
   Meta,

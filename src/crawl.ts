@@ -35,6 +35,8 @@ const enqueue = (node: Crawlable) => {
   queue.push(node);
 };
 
+let crawlQueue: () => void;
+
 const crawlNode = (node: Crawlable & Partial<Crawled>) => {
   node.internal = isSameDomain(node.resolved, options.resolved);
 
@@ -107,7 +109,7 @@ const crawlNode = (node: Crawlable & Partial<Crawled>) => {
     });
 };
 
-const crawlQueue = () => {
+crawlQueue = () => {
   if (!options.sequence) {
     while (queue.length) {
       const node = queue.shift();

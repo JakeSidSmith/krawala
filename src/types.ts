@@ -83,7 +83,12 @@ export type Content = Partial<{
   p: string | null;
 }>
 
-export interface Hrefs {
+export interface RequiredPageData {
+  content: Content;
+  meta: Meta[];
+  links: Link[];
+  scripts: Script[];
+  images: Image[];
   hrefs: {
     internal: Href[];
     external: Href[];
@@ -93,15 +98,10 @@ export interface Hrefs {
   }
 }
 
-export type PageData = Hrefs & Partial<{
+export type PageData = RequiredPageData & Partial<{
   charset: string | null;
   title: string | null;
   wordCount: number | null;
-  content: Content;
-  meta: Meta[];
-  links: Link[];
-  scripts: Script[];
-  images: Image[];
 }>
 
 export type Page = Crawled & PageData;
