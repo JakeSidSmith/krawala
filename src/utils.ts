@@ -187,3 +187,8 @@ export const complete = (options: Options, pages: Output) => {
     options.callback(getOutput(options, pages));
   }
 }
+
+export const getFailed = (crawled: {[index: string]: Partial<Crawled> | undefined}): Array<Partial<Crawled>> => {
+  return _.toArray<Partial<Crawled> | undefined>(crawled)
+    .filter((crawledNode) => crawledNode && crawledNode.failed) as Array<Partial<Crawled>>;
+}

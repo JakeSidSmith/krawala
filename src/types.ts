@@ -109,4 +109,5 @@ export type Page = Crawled & PageData;
 export interface Output {
   pages: Crawlable[];
   externalPages: Crawlable[];
+  failed: Array<Partial<Crawled>>;
 }

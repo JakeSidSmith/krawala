@@ -12,6 +12,7 @@ import {
 import {
   collectData,
   complete,
+  getFailed,
   isSameDomain,
   resolveUrl,
   updateProgress,
@@ -19,6 +20,7 @@ import {
 } from './utils';
 
 let options: Options;
+const crawled: {[index: string]: Partial<Crawled> | undefined} = {};
 const queue: Array<Crawlable & Partial<Crawled>> = [];
 const pages: Array<Crawlable & Partial<Page>> = [];
 const externalPages: Array<Crawlable & Partial<Crawled>> = [];
@@ -42,6 +44,15 @@ const crawlNode = (node: Crawlable & Partial<Crawled>) => {
 
   if (node.depth > progress.depth) {
     progress.depth = node.depth;
+  }
+
+  if (!crawled.hasOwnProperty(node.resolved)) {
+    crawled[node.resolved] = {
+      url: node.url,
+      resolved: node.resolved,
+      depth: node.depth,
+      internal: node.internal
+    };
   }
 
   updateProgress(options, progress, `Crawling: ${node.resolved}`);
@@ -98,10 +109,18 @@ const crawlNode = (node: Crawlable & Partial<Crawled>) => {
         }
       }
 
+      const crawledNode = crawled[node.resolved];
+
+      if (typeof crawledNode === 'object') {
+        crawledNode.failed = node.failed;
+        crawledNode.type = node.type;
+        crawledNode.status = node.status;
+      }
+
       updateProgress(options, progress, `Crawled:  ${node.resolved}`);
 
       if (progress.urlsToCrawl.length === progress.urlsCrawled.length) {
-        complete(options, {pages, externalPages});
+        complete(options, {pages, externalPages, failed: getFailed(crawled)});
       } else if (options.interval) {
         setTimeout(crawlQueue, options.interval);
       } else {
