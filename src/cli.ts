@@ -78,7 +78,7 @@ collect(
           Flag(
             'wait',
             {
-              description: 'Wait for user input upon if a request fails',
+              description: 'Wait for user input upon a failed request',
               alias: 'w'
             }
           )
