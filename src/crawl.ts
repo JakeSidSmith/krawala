@@ -110,20 +110,10 @@ const crawlNode = (node: Crawlable & Partial<Crawled>) => {
 };
 
 crawlQueue = () => {
-  if (!options.sequence) {
-    while (queue.length) {
-      const node = queue.shift();
+  const node = queue.shift();
 
-      if (node) {
-        crawlNode(node);
-      }
-    }
-  } else {
-    const node = queue.shift();
-
-    if (node) {
-      crawlNode(node);
-    }
+  if (node) {
+    crawlNode(node);
   }
 };
 
@@ -136,7 +126,6 @@ export const crawl = (tree: Tree & RequiredOptions) => {
       interval
     },
     flags: {
-      sequence = false,
       wait = false
     }
   } = tree;
@@ -148,7 +137,6 @@ export const crawl = (tree: Tree & RequiredOptions) => {
     resolved: resolveUrl(url),
     depth: parseInt(depth, 10),
     format,
-    sequence: interval && typeof interval === 'string' ? true : sequence,
     interval: interval && typeof interval === 'string' ? parseInt(interval, 10) : undefined,
     wait
   };

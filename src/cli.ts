@@ -67,17 +67,10 @@ collect(
               options: ['json', 'yaml']
             }
           ),
-          Flag(
-            'sequence',
-            {
-              description: 'Run requests in sequence',
-              alias: 's'
-            }
-          ),
           KWArg(
             'interval',
             {
-              description: 'Interval between requests (millis) when not in parallel',
+              description: 'Interval between requests (millis)',
               alias : 'i',
               type: 'number'
             }

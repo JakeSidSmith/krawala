@@ -9,7 +9,6 @@ export interface Options {
   resolved: string;
   depth: number;
   format: string;
-  sequence: boolean;
   interval?: number;
   wait: boolean;
   callback?: (output: string) => any;
