@@ -40,7 +40,7 @@ export interface Crawled extends Crawlable {
   internal: boolean;
   failed: boolean;
   status: number;
-  type: string | null;
+  type: string | string[] | null;
 }
 
 export type Link = {

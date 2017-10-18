@@ -1,5 +1,5 @@
 import { Tree } from 'jargs';
-import * as request from 'superagent';
+import * as request from 'request';
 import * as _ from 'underscore';
 import {
   Crawlable,
@@ -19,8 +19,17 @@ import {
   validateBaseUrl
 } from './utils';
 
+const MATCHES_TEXT_HTML = /\btext\s*\/\s*html\b/i;
+
 const USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 ' +
   '(KHTML, like Gecko) Chrome/39.0.2171.71 Safari/537.36';
+
+const REQUEST_OPTIONS = {
+  method: 'GET',
+  headers: {
+    'User-Agent': USER_AGENT
+  }
+};
 
 let options: Options;
 const crawled: {[index: string]: Partial<Crawled> | undefined} = {};
@@ -61,12 +70,12 @@ const crawlNode = (node: Crawlable & Partial<Crawled>) => {
   updateProgress(options, progress, `Crawling: ${node.resolved}`);
 
   request
-    .get(node.resolved)
-    .accept('text/html')
-    .timeout(options.timeout)
-    .send()
-    .end((error, response) => {
+    .get(node.resolved, {...REQUEST_OPTIONS, timeout: options.timeout}, (error, response, body) => {
       progress.urlsCrawled.push(node.resolved);
+
+      const status = response.statusCode;
+      const contentType = response.headers['content-type'];
+      const type = Array.isArray(contentType) ? `[${contentType.join(', ')}]` : contentType;
 
       if (error) {
         progress.failed.push(node.resolved);
@@ -76,11 +85,11 @@ const crawlNode = (node: Crawlable & Partial<Crawled>) => {
         node.status = error.status || null
       } else {
         node.failed = false;
-        node.type = response.type;
-        node.status = response.status;
+        node.type = type;
+        node.status = status;
 
-        if (node.internal && response.type === 'text/html' && response.text) {
-          const data = collectData(node as Crawled, response.text, options.resolved);
+        if (node.internal && MATCHES_TEXT_HTML.test(type) && body) {
+          const data = collectData(node as Crawled, body, options.resolved);
 
           _.extend(node, data);
 
@@ -107,8 +116,8 @@ const crawlNode = (node: Crawlable & Partial<Crawled>) => {
           }
         } else {
           node.failed = false;
-          node.type = response.type;
-          node.status = response.status;
+          node.type = type;
+          node.status = status;
         }
       }
 
