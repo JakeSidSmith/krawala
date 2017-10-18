@@ -49,6 +49,7 @@ const crawlNode = (node: Crawlable & Partial<Crawled>) => {
   request
     .get(node.resolved)
     .accept('text/html')
+    .timeout(options.timeout)
     .send()
     .end((error, response) => {
       progress.urlsCrawled.push(node.resolved);
@@ -123,7 +124,8 @@ export const crawl = (tree: Tree & RequiredOptions) => {
       url,
       depth = '10',
       format = 'json',
-      interval
+      interval,
+      timeout = '10000'
     },
     flags: {
       wait = false
@@ -138,7 +140,8 @@ export const crawl = (tree: Tree & RequiredOptions) => {
     depth: parseInt(depth, 10),
     format,
     interval: interval && typeof interval === 'string' ? parseInt(interval, 10) : undefined,
-    wait
+    wait,
+    timeout: parseInt(timeout, 10)
   };
 
   pages.push({url, resolved: resolveUrl(url), depth: 0});

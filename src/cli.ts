@@ -75,6 +75,14 @@ collect(
               type: 'number'
             }
           ),
+          KWArg(
+            'timeout',
+            {
+              description: 'Maximum time to wait for a request (millis)',
+              alias : 't',
+              type: 'number'
+            }
+          ),
           Flag(
             'wait',
             {

@@ -11,6 +11,7 @@ export interface Options {
   format: string;
   interval?: number;
   wait: boolean;
+  timeout: number;
   callback?: (output: string) => any;
 }
 
