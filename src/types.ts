@@ -87,6 +87,9 @@ export type PartiallyCrawled = Crawlable & Partial<Crawled>;
 export interface OutputLinks {
   pages: Crawlable[];
   externalPages: Crawlable[];
+  links: Crawlable[];
+  scripts: Crawlable[];
+  images: Crawlable[];
 }
 
 export interface Output extends OutputLinks {

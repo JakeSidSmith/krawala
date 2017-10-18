@@ -50,6 +50,9 @@ const progress: Progress = {
 const output: Output = {
   pages: [],
   externalPages: [],
+  links: [],
+  scripts: [],
+  images: [],
   failed: []
 };
 
@@ -125,6 +128,10 @@ const crawlNode = (node: PartiallyCrawled) => {
           if (node.depth < options.depth) {
             page.hrefs.internal.forEach((href) => storeSubNode(node, href, 'pages'));
             page.hrefs.external.forEach((href) => storeSubNode(node, href, 'externalPages'));
+
+            page.links.forEach((href) => storeSubNode(node, href, 'links'));
+            page.scripts.forEach((href) => storeSubNode(node, href, 'scripts'));
+            page.images.forEach((href) => storeSubNode(node, href, 'images'));
           }
         } else {
           node.failed = false;
