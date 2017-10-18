@@ -4,7 +4,10 @@ import * as _ from 'underscore';
 import {
   Crawlable,
   Crawled,
+  Href,
   Options,
+  Output,
+  OutputLinks,
   Page,
   Progress,
   RequiredOptions
@@ -32,10 +35,10 @@ const REQUEST_OPTIONS = {
 };
 
 let options: Options;
-const crawled: {[index: string]: Partial<Crawled> | undefined} = {};
+
+const crawled: {[index: string]: (Crawlable & Partial<Crawled>) | undefined} = {};
 const queue: Array<Crawlable & Partial<Crawled>> = [];
-const pages: Array<Crawlable & Partial<Page>> = [];
-const externalPages: Array<Crawlable & Partial<Crawled>> = [];
+
 const progress: Progress = {
   depth: 0,
   urlsToCrawl: [],
@@ -44,27 +47,51 @@ const progress: Progress = {
   progressMade: false
 };
 
+const output: Output = {
+  pages: [],
+  externalPages: [],
+  failed: []
+};
+
 const enqueue = (node: Crawlable) => {
   progress.urlsToCrawl.push(node.resolved);
   queue.push(node);
 };
 
+const storeNode = (node: Crawlable) => {
+  crawled[node.resolved] = node;
+};
+
+const storeSubNode = (node: Crawlable, subUrl: Href, key: keyof OutputLinks) => {
+  const { url, resolved } = subUrl;
+
+  const subNode = {
+    url,
+    resolved,
+    depth: node.depth + 1,
+    internal: isSameDomain(resolved, options.resolved),
+    linkedFrom: [node.resolved]
+  };
+
+  if (progress.urlsToCrawl.indexOf(resolved) < 0) {
+    output[key].push(subNode);
+    enqueue(subNode);
+  }
+
+  const subCrawledNode = crawled[resolved];
+
+  if (typeof subCrawledNode === 'object') {
+    subCrawledNode.linkedFrom.push(node.resolved);
+  } else {
+    storeNode(subNode);
+  }
+};
+
 let crawlQueue: () => void;
 
 const crawlNode = (node: Crawlable & Partial<Crawled>) => {
-  node.internal = isSameDomain(node.resolved, options.resolved);
-
   if (node.depth > progress.depth) {
     progress.depth = node.depth;
-  }
-
-  if (!crawled.hasOwnProperty(node.resolved)) {
-    crawled[node.resolved] = {
-      url: node.url,
-      resolved: node.resolved,
-      depth: node.depth,
-      internal: node.internal
-    };
   }
 
   updateProgress(options, progress, `Crawling: ${node.resolved}`);
@@ -96,23 +123,8 @@ const crawlNode = (node: Crawlable & Partial<Crawled>) => {
           const page = node as Page;
 
           if (node.depth < options.depth) {
-            page.hrefs.internal.forEach((subPage) => {
-              const { url, resolved } = subPage;
-
-              if (progress.urlsToCrawl.indexOf(resolved) < 0) {
-                pages.push({url, resolved, depth: node.depth + 1});
-                enqueue(pages[pages.length - 1]);
-              }
-            });
-
-            page.hrefs.external.forEach((externalPage, index) => {
-              const { url, resolved } = externalPage;
-
-              if (progress.urlsToCrawl.indexOf(resolved) < 0) {
-                externalPages.push({url, resolved, depth: node.depth + 1});
-                enqueue(externalPages[externalPages.length - 1]);
-              }
-            });
+            page.hrefs.internal.forEach((subUrl) => storeSubNode(node, subUrl, 'pages'));
+            page.hrefs.external.forEach((subUrl) => storeSubNode(node, subUrl, 'externalPages'));
           }
         } else {
           node.failed = false;
@@ -132,7 +144,7 @@ const crawlNode = (node: Crawlable & Partial<Crawled>) => {
       updateProgress(options, progress, `Crawled:  ${node.resolved}`);
 
       if (progress.urlsToCrawl.length === progress.urlsCrawled.length) {
-        complete(options, {pages, externalPages, failed: getFailed(crawled)});
+        complete(options, {...output, failed: getFailed(crawled)});
       } else if (options.interval) {
         setTimeout(crawlQueue, options.interval);
       } else {
@@ -175,8 +187,16 @@ export const crawl = (tree: Tree & RequiredOptions) => {
     timeout: parseInt(timeout, 10)
   };
 
-  pages.push({url, resolved: resolveUrl(url), depth: 0});
-  enqueue(pages[pages.length - 1]);
+  const node = {
+    url,
+    resolved: resolveUrl(url),
+    depth: 0,
+    internal: true,
+    linkedFrom: []
+  };
+
+  output.pages.push(node);
+  enqueue(node);
 
   crawlQueue();
 };

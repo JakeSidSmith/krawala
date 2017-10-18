@@ -34,10 +34,11 @@ export interface Crawlable {
   url: string;
   resolved: string;
   depth: number;
+  internal: boolean;
+  linkedFrom: string[];
 }
 
 export interface Crawled extends Crawlable {
-  internal: boolean;
   failed: boolean;
   status: number;
   type: string | string[] | null;
@@ -106,8 +107,11 @@ export type PageData = RequiredPageData & Partial<{
 
 export type Page = Crawled & PageData;
 
-export interface Output {
+export interface OutputLinks {
   pages: Crawlable[];
   externalPages: Crawlable[];
+}
+
+export interface Output extends OutputLinks {
   failed: Array<Partial<Crawled>>;
 }
