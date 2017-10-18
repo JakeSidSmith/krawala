@@ -62,8 +62,8 @@ const storeNode = (node: PartiallyCrawled) => {
   crawled[node.resolved] = node;
 };
 
-const storeSubNode = (node: PartiallyCrawled, subUrl: Href, key: keyof OutputLinks) => {
-  const { url, resolved } = subUrl;
+const storeSubNode = (node: PartiallyCrawled, href: Href, key: keyof OutputLinks) => {
+  const { url, resolved } = href;
 
   const subNode = {
     url,
@@ -123,8 +123,8 @@ const crawlNode = (node: PartiallyCrawled) => {
           const page = node as Page;
 
           if (node.depth < options.depth) {
-            page.hrefs.internal.forEach((subUrl) => storeSubNode(node, subUrl, 'pages'));
-            page.hrefs.external.forEach((subUrl) => storeSubNode(node, subUrl, 'externalPages'));
+            page.hrefs.internal.forEach((href) => storeSubNode(node, href, 'pages'));
+            page.hrefs.external.forEach((href) => storeSubNode(node, href, 'externalPages'));
           }
         } else {
           node.failed = false;
