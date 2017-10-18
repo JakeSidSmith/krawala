@@ -3,7 +3,7 @@ import * as request from 'request';
 import * as _ from 'underscore';
 import {
   Crawled,
-  Href,
+  LinkScriptImageOrHref,
   Options,
   Output,
   OutputLinks,
@@ -62,7 +62,7 @@ const storeNode = (node: PartiallyCrawled) => {
   crawled[node.resolved] = node;
 };
 
-const storeSubNode = (node: PartiallyCrawled, href: Href, key: keyof OutputLinks) => {
+const storeSubNode = (node: PartiallyCrawled, href: LinkScriptImageOrHref, key: keyof OutputLinks) => {
   const { url, resolved } = href;
 
   const subNode = {

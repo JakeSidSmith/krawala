@@ -23,11 +23,12 @@ export interface Progress {
   progressMade: boolean;
 }
 
+export interface Attributes {
+  [index: string]: string;
+}
+
 export interface Meta {
-  attributes: {
-    name: string;
-    content: string;
-  }
+  attributes: Attributes;
 }
 
 export interface Crawlable {
@@ -44,37 +45,11 @@ export interface Crawled extends Crawlable {
   type: string | string[] | null;
 }
 
-export type Link = {
-  attributes: {
-    href: string;
-  }
-} & {
-  attributes: Partial<{
-    rel: string;
-    type: string;
-  }>
-}
-
-export type Script = {
-  attributes: {
-    src: string;
-  }
-} & {
-  attributes: Partial<{
-    type: string;
-  }>
-}
-
-export interface Image {
-  attributes: {
-    src: string;
-  }
-}
-
-export interface Href {
+export interface LinkScriptImageOrHref {
   url: string;
   resolved: string;
   references: number;
+  attributes: Attributes;
 }
 
 export type Content = Partial<{
@@ -87,15 +62,15 @@ export type Content = Partial<{
 export interface RequiredPageData {
   content: Content;
   meta: Meta[];
-  links: Link[];
-  scripts: Script[];
-  images: Image[];
+  links: LinkScriptImageOrHref[];
+  scripts: LinkScriptImageOrHref[];
+  images: LinkScriptImageOrHref[];
   hrefs: {
-    internal: Href[];
-    external: Href[];
-    samePage: Href[];
-    email: Href[];
-    phone: Href[];
+    internal: LinkScriptImageOrHref[];
+    external: LinkScriptImageOrHref[];
+    samePage: LinkScriptImageOrHref[];
+    email: LinkScriptImageOrHref[];
+    phone: LinkScriptImageOrHref[];
   }
 }
 

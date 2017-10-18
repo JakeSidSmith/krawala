@@ -6,17 +6,15 @@ import * as _ from 'underscore';
 import * as parseUrl from 'url-parse';
 import * as wordCount from 'word-count';
 import {
+  Attributes,
   Crawled,
-  Image,
-  Link,
-  Meta,
+  LinkScriptImageOrHref,
   Options,
   Output,
   Page,
   PageData,
   PartiallyCrawled,
   Progress,
-  Script
 } from './types';
 
 const PROGRESS_LINES = 8;
@@ -111,15 +109,22 @@ export const updateProgress = (options: Options, progress: Progress, currentTask
   }
 }
 
-export const groupHrefs = (hrefs: string[], url: string, baseUrl: string) => {
-  const groupedHrefs = _.groupBy(hrefs, _.identity);
-  const mappedHrefs = _.sortBy(_.map(groupedHrefs, (values, key) => ({
-    url: key,
-    resolved: resolveUrl(key, url),
-    references: values.length
-  })), 'url');
+export const resolveLinkScriptImageOrHref = (
+  attribsList: Attributes[],
+  url: string,
+  baseUrl: string,
+  linkKey: string
+) => {
+  return attribsList.map((attribs) => ({
+    url: attribs[linkKey],
+    resolved: resolveUrl(attribs[linkKey], url),
+    references: attribsList.filter((otherAttribs) => attribs[linkKey] === otherAttribs[linkKey]).length,
+    attributes: attribs
+  }));
+};
 
-  return _.groupBy(mappedHrefs, (href): string => {
+export const groupHrefs = (resolvedHrefs: LinkScriptImageOrHref[], baseUrl: string) => {
+  return _.groupBy(resolvedHrefs, (href): string => {
     if (href.url.indexOf('#') === 0) {
       return 'samePage';
     }
@@ -139,22 +144,28 @@ export const groupHrefs = (hrefs: string[], url: string, baseUrl: string) => {
 export const collectData = (node: Crawled & Partial<Page>, text: string, baseUrl: string): PageData => {
   const $ = cheerio.load(text);
 
-  const hrefs = $('a[href]').toArray().map((element) => $(element).attr('href'));
+  const hrefAttribs = $('a[href]').toArray().map((element) => element.attribs);
 
-  const groupedHrefs = groupHrefs(hrefs, node.resolved, baseUrl);
+  const hrefResolved = resolveLinkScriptImageOrHref(hrefAttribs, node.resolved, baseUrl, 'href');
+  const groupedHrefs = groupHrefs(hrefResolved, baseUrl);
+
+  const linksAttribs = $('link[href]').toArray().map((element) => element.attribs);
+  const linksResolved = resolveLinkScriptImageOrHref(linksAttribs, node.resolved, baseUrl, 'href');
+
+  const scriptsAttribs = $('script[src]').toArray().map((element) => element.attribs);
+  const scriptsResolved = resolveLinkScriptImageOrHref(scriptsAttribs, node.resolved, baseUrl, 'src');
+
+  const imagesAttribs = $('img[src]').toArray().map((element) => element.attribs);
+  const imagesResolved = resolveLinkScriptImageOrHref(imagesAttribs, node.resolved, baseUrl, 'src');
 
   return {
     title: $('title').text() || null,
     wordCount: wordCount($('body').text()),
     charset: $('meta[charset]').attr('charset') || null,
-    meta: _.chain($('meta[name],meta[property]').toArray())
-      .map((element) => ({attributes: element.attribs} as Meta)).value(),
-    links: _.chain($('link[href]').toArray())
-      .map((element) => ({attributes: element.attribs} as Link)).value(),
-    scripts: _.chain($('script[src]').toArray())
-      .map((element) => ({attributes: element.attribs} as Script)).value(),
-    images: _.chain($('img[src]').toArray())
-      .map((element) => ({attributes: element.attribs} as Image)).value(),
+    meta: $('meta[name],meta[property]').toArray().map((element) => ({attributes: element.attribs})),
+    links: linksResolved,
+    scripts: scriptsResolved,
+    images: imagesResolved,
     content: {
       h1: $('h1').first().text() || null,
       h2: $('h2').first().text() || null,
