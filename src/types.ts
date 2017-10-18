@@ -107,6 +107,8 @@ export type PageData = RequiredPageData & Partial<{
 
 export type Page = Crawled & PageData;
 
+export type PartiallyCrawled = Crawlable & Partial<Crawled>;
+
 export interface OutputLinks {
   pages: Crawlable[];
   externalPages: Crawlable[];

@@ -2,13 +2,13 @@ import { Tree } from 'jargs';
 import * as request from 'request';
 import * as _ from 'underscore';
 import {
-  Crawlable,
   Crawled,
   Href,
   Options,
   Output,
   OutputLinks,
   Page,
+  PartiallyCrawled,
   Progress,
   RequiredOptions
 } from './types';
@@ -36,8 +36,8 @@ const REQUEST_OPTIONS = {
 
 let options: Options;
 
-const crawled: {[index: string]: (Crawlable & Partial<Crawled>) | undefined} = {};
-const queue: Array<Crawlable & Partial<Crawled>> = [];
+const crawled: {[index: string]: PartiallyCrawled} = {};
+const queue: PartiallyCrawled[] = [];
 
 const progress: Progress = {
   depth: 0,
@@ -53,16 +53,16 @@ const output: Output = {
   failed: []
 };
 
-const enqueue = (node: Crawlable) => {
+const enqueue = (node: PartiallyCrawled) => {
   progress.urlsToCrawl.push(node.resolved);
   queue.push(node);
 };
 
-const storeNode = (node: Crawlable) => {
+const storeNode = (node: PartiallyCrawled) => {
   crawled[node.resolved] = node;
 };
 
-const storeSubNode = (node: Crawlable, subUrl: Href, key: keyof OutputLinks) => {
+const storeSubNode = (node: PartiallyCrawled, subUrl: Href, key: keyof OutputLinks) => {
   const { url, resolved } = subUrl;
 
   const subNode = {
@@ -89,7 +89,7 @@ const storeSubNode = (node: Crawlable, subUrl: Href, key: keyof OutputLinks) => 
 
 let crawlQueue: () => void;
 
-const crawlNode = (node: Crawlable & Partial<Crawled>) => {
+const crawlNode = (node: PartiallyCrawled) => {
   if (node.depth > progress.depth) {
     progress.depth = node.depth;
   }

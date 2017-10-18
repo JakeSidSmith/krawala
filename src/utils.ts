@@ -14,6 +14,7 @@ import {
   Output,
   Page,
   PageData,
+  PartiallyCrawled,
   Progress,
   Script
 } from './types';
@@ -188,7 +189,6 @@ export const complete = (options: Options, pages: Output) => {
   }
 }
 
-export const getFailed = (crawled: {[index: string]: Partial<Crawled> | undefined}): Array<Partial<Crawled>> => {
-  return _.toArray<Partial<Crawled> | undefined>(crawled)
-    .filter((crawledNode) => crawledNode && crawledNode.failed) as Array<Partial<Crawled>>;
+export const getFailed = (crawled: {[index: string]: PartiallyCrawled}): PartiallyCrawled[] => {
+  return _.toArray<PartiallyCrawled>(crawled).filter((crawledNode) => crawledNode.failed);
 }
