@@ -57,7 +57,7 @@ export type Content = Partial<{
   h2: string | null;
   h3: string | null;
   p: string | null;
-}>
+}>;
 
 export interface RequiredPageData {
   content: Content;
@@ -78,7 +78,7 @@ export type PageData = RequiredPageData & Partial<{
   charset: string | null;
   title: string | null;
   wordCount: number | null;
-}>
+}>;
 
 export type Page = Crawled & PageData;
 

@@ -10,7 +10,7 @@ import {
   Page,
   PartiallyCrawled,
   Progress,
-  RequiredOptions
+  RequiredOptions,
 } from './types';
 import {
   collectData,
@@ -19,7 +19,7 @@ import {
   isSameDomain,
   resolveUrl,
   updateProgress,
-  validateBaseUrl
+  validateBaseUrl,
 } from './utils';
 
 const MATCHES_SUCCESS_STATUS = /^[123]/;
@@ -31,13 +31,13 @@ const USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 ' +
 const REQUEST_OPTIONS = {
   method: 'GET',
   headers: {
-    'User-Agent': USER_AGENT
-  }
+    'User-Agent': USER_AGENT,
+  },
 };
 
 let options: Options;
 
-const crawled: {[index: string]: PartiallyCrawled} = {};
+const crawled: {[index: string]: PartiallyCrawled | undefined} = {};
 const queue: PartiallyCrawled[] = [];
 
 const progress: Progress = {
@@ -45,7 +45,7 @@ const progress: Progress = {
   urlsToCrawl: [],
   urlsCrawled: [],
   failed: [],
-  progressMade: false
+  progressMade: false,
 };
 
 const output: Output = {
@@ -54,7 +54,7 @@ const output: Output = {
   links: [],
   scripts: [],
   images: [],
-  failed: []
+  failed: [],
 };
 
 const enqueue = (node: PartiallyCrawled) => {
@@ -74,7 +74,7 @@ const storeSubNode = (node: PartiallyCrawled, href: LinkScriptImageOrHref, key: 
     resolved,
     depth: node.depth + 1,
     internal: isSameDomain(resolved, options.resolved),
-    linkedFrom: [node.resolved]
+    linkedFrom: [node.resolved],
   };
 
   if (progress.urlsToCrawl.indexOf(resolved) < 0) {
@@ -174,11 +174,11 @@ export const crawl = (tree: Tree & RequiredOptions) => {
       depth = '10',
       format = 'json',
       interval,
-      timeout = '10000'
+      timeout = '10000',
     },
     flags: {
-      wait = false
-    }
+      wait = false,
+    },
   } = tree;
 
   validateBaseUrl(url);
@@ -188,9 +188,9 @@ export const crawl = (tree: Tree & RequiredOptions) => {
     resolved: resolveUrl(url),
     depth: parseInt(depth, 10),
     format,
-    interval: interval && typeof interval === 'string' ? parseInt(interval, 10) : undefined,
+    interval: typeof interval === 'string' ? parseInt(interval, 10) : undefined,
     wait,
-    timeout: parseInt(timeout, 10)
+    timeout: parseInt(timeout, 10),
   };
 
   const node = {
@@ -198,7 +198,7 @@ export const crawl = (tree: Tree & RequiredOptions) => {
     resolved: resolveUrl(url),
     depth: 0,
     internal: true,
-    linkedFrom: []
+    linkedFrom: [],
   };
 
   output.pages.push(node);

@@ -27,7 +27,7 @@ export const error = (message: string): void => {
   } else {
     throw new Error(message);
   }
-}
+};
 
 export const isSameDomain = (url: string, parentUrl: string): boolean => {
   let parentUrlInfo = parseUrl(parentUrl);
@@ -45,11 +45,11 @@ export const isSameDomain = (url: string, parentUrl: string): boolean => {
     parentDomainInfo.domain === domainInfo.domain &&
     parentDomainInfo.tld === domainInfo.tld :
     false;
-}
+};
 
 export const resolveUrl = (url: string, parentUrl?: string) => {
   return parseUrl(url, parentUrl).href;
-}
+};
 
 export const validateBaseUrl = (url: string): true | void => {
   if (!url) {
@@ -71,19 +71,19 @@ export const validateBaseUrl = (url: string): true | void => {
   }
 
   return true;
-}
+};
 
 export const padLeft = (value: string | number) => {
   value = PADDING + value.toString();
   return value.substring(value.length - PADDING.length);
-}
+};
 
 export const clearProgress = () => {
   for (let i = 0; i < PROGRESS_LINES; i += 1) {
     readline.moveCursor(process.stderr, 0, -1);
     readline.clearLine(process.stderr, 0);
   }
-}
+};
 
 export const createProgressMessage = (options: Options, progress: Progress, currentTask: string) => {
   return `
@@ -95,7 +95,7 @@ Failed: ${padLeft(progress.failed.length)}
 ${currentTask}
 
 `;
-}
+};
 
 export const updateProgress = (options: Options, progress: Progress, currentTask: string) => {
   if (typeof process === 'object') {
@@ -107,7 +107,7 @@ export const updateProgress = (options: Options, progress: Progress, currentTask
 
     progress.progressMade = true;
   }
-}
+};
 
 export const resolveLinkScriptImageOrHref = (
   attribsList: Attributes[],
@@ -119,7 +119,7 @@ export const resolveLinkScriptImageOrHref = (
     url: attribs[linkKey],
     resolved: resolveUrl(attribs[linkKey], url),
     references: attribsList.filter((otherAttribs) => attribs[linkKey] === otherAttribs[linkKey]).length,
-    attributes: attribs
+    attributes: attribs,
   }));
 };
 
@@ -139,7 +139,7 @@ export const groupHrefs = (resolvedHrefs: LinkScriptImageOrHref[], baseUrl: stri
 
     return isSameDomain(href.resolved, baseUrl) ? 'internal' : 'external';
   });
-}
+};
 
 export const collectData = (node: Crawled & Partial<Page>, text: string, baseUrl: string): PageData => {
   const $ = cheerio.load(text);
@@ -170,17 +170,17 @@ export const collectData = (node: Crawled & Partial<Page>, text: string, baseUrl
       h1: $('h1').first().text() || null,
       h2: $('h2').first().text() || null,
       h3: $('h3').first().text() || null,
-      p: $('p').first().text() || null
+      p: $('p').first().text() || null,
     },
     hrefs: {
       internal: groupedHrefs.internal || [],
       external: groupedHrefs.external || [],
       samePage: groupedHrefs.samePage || [],
       email: groupedHrefs.email || [],
-      phone: groupedHrefs.phone || []
-    }
+      phone: groupedHrefs.phone || [],
+    },
   };
-}
+};
 
 export const getOutput = (options: Options, pages: {[index: string]: any} | any[]): string => {
   switch (options.format) {
@@ -190,7 +190,7 @@ export const getOutput = (options: Options, pages: {[index: string]: any} | any[
     default:
       return JSON.stringify(pages, null, 2) + '\n';
   }
-}
+};
 
 export const complete = (options: Options, pages: Output) => {
   if (typeof process === 'object' && typeof process.stdout !== 'undefined') {
@@ -198,8 +198,8 @@ export const complete = (options: Options, pages: Output) => {
   } else if (typeof options.callback === 'function') {
     options.callback(getOutput(options, pages));
   }
-}
+};
 
-export const getFailed = (crawled: {[index: string]: PartiallyCrawled}): PartiallyCrawled[] => {
+export const getFailed = (crawled: {[index: string]: PartiallyCrawled | undefined}): PartiallyCrawled[] => {
   return _.toArray<PartiallyCrawled>(crawled).filter((crawledNode) => crawledNode.failed);
-}
+};

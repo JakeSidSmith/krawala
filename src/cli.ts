@@ -7,7 +7,7 @@ import {
   Help,
   KWArg,
   Program,
-  Required
+  Required,
 } from 'jargs';
 
 import { crawl } from './';
@@ -17,7 +17,7 @@ collect(
     'help',
     {
       alias: 'h',
-      description: 'Display help and usage info'
+      description: 'Display help and usage info',
     },
     Program(
       'krawala',
@@ -25,8 +25,8 @@ collect(
         description: 'Simple javascript web-crawler with command line interface',
         usage: 'krawala <command> [options]',
         examples: [
-          'krawala crawl -u http://domain.com -d 100'
-        ]
+          'krawala crawl -u http://domain.com -d 100',
+        ],
       },
       Required( // Swap for RequireAny when more sub-commands added
         Command(
@@ -35,10 +35,10 @@ collect(
             description: 'Crawl a domain',
             usage: 'krawala crawl [options]',
             examples: [
-              'krawala crawl -u http://domain.com -d 100'
+              'krawala crawl -u http://domain.com -d 100',
             ],
             alias: 'c',
-            callback: crawl
+            callback: crawl,
           },
           Required(
             KWArg(
@@ -46,7 +46,7 @@ collect(
               {
                 description: 'URL to crawl',
                 alias : 'u',
-                type: 'string'
+                type: 'string',
               }
             )
           ),
@@ -55,7 +55,7 @@ collect(
             {
               description: 'Depth to crawl',
               alias : 'd',
-              type: 'number'
+              type: 'number',
             }
           ),
           KWArg(
@@ -64,7 +64,7 @@ collect(
               description: 'Format to return',
               alias: 'f',
               type: 'string',
-              options: ['json', 'yaml']
+              options: ['json', 'yaml'],
             }
           ),
           KWArg(
@@ -72,7 +72,7 @@ collect(
             {
               description: 'Interval between requests (millis)',
               alias : 'i',
-              type: 'number'
+              type: 'number',
             }
           ),
           KWArg(
@@ -80,14 +80,14 @@ collect(
             {
               description: 'Maximum time to wait for a request (millis)',
               alias : 't',
-              type: 'number'
+              type: 'number',
             }
           ),
           Flag(
             'wait',
             {
               description: 'Wait for user input upon a failed request',
-              alias: 'w'
+              alias: 'w',
             }
           )
         )
