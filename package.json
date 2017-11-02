@@ -7,7 +7,7 @@
     "krawala": "dist/cli.js"
   },
   "scripts": {
-    "prepublish": "./scripts/dist/",
+    "prepublish": "./scripts/dist",
     "dist": "./scripts/dist",
     "lint": "tslint --project tsconfig.json --type-check '@(src|tests|types|docs)/**/*.@(ts|tsx)'",
     "test": "npm run lint"
