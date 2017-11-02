@@ -28,9 +28,6 @@
     "url": "https://github.com/JakeSidSmith/krawala/issues"
   },
   "homepage": "https://github.com/JakeSidSmith/krawala#readme",
-  "engines": {
-    "node": "6.10.3"
-  },
   "dependencies": {
     "@types/cheerio": "0.22.3",
     "@types/js-yaml": "3.9.1",
