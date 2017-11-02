@@ -9,7 +9,7 @@
   "scripts": {
     "prepublish": "./scripts/dist",
     "dist": "./scripts/dist",
-    "lint": "tslint --project tsconfig.json --type-check '@(src|tests|types|docs)/**/*.@(ts|tsx)'",
+    "lint": "tslint --project tsconfig.json '@(src|tests|types|docs)/**/*.@(ts|tsx)'",
     "test": "npm run lint"
   },
   "repository": {
@@ -47,7 +47,7 @@
     "word-count": "=0.2.2"
   },
   "devDependencies": {
-    "tslint": "5.7.0",
+    "tslint": "5.8.0",
     "tslint-eslint-rules": "4.1.1"
   }
 }
