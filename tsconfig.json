@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+    "pretty": true,
+    "module": "commonjs",
+    "jsx": "react",
+    "target": "es5",
+    "typeRoots": [
+      "node_modules/@types/",
+      "types/"
+    ]
+  },
+  "exclude": [
+    "node_modules/*",
+    "dist/*"
+  ]
+}

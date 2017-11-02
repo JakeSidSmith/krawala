@@ -1,13 +1,16 @@
 {
   "name": "krawala",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Simple javascript web-crawler with command line interface",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "bin": {
-    "krawala": "src/cli.js"
+    "krawala": "dist/cli.js"
   },
   "scripts": {
-    "test": "eslint -c node_modules/eslintrc/.eslintrc-es5 src/"
+    "prepublish": "./scripts/dist",
+    "dist": "./scripts/dist",
+    "lint": "tslint --project tsconfig.json '@(src|tests|types|docs)/**/*.@(ts|tsx)'",
+    "test": "npm run lint"
   },
   "repository": {
     "type": "git",
@@ -25,20 +28,26 @@
     "url": "https://github.com/JakeSidSmith/krawala/issues"
   },
   "homepage": "https://github.com/JakeSidSmith/krawala#readme",
-  "engines": {
-    "node": "6.9.1"
+  "dependencies": {
+    "@types/cheerio": "0.22.3",
+    "@types/js-yaml": "3.9.1",
+    "@types/node": "8.0.35",
+    "@types/request": "2.0.6",
+    "@types/superagent": "3.5.6",
+    "@types/underscore": "1.8.3",
+    "@types/url-parse": "1.1.0",
+    "cheerio": "=0.22.0",
+    "jargs": "0.3.3",
+    "js-yaml": "=3.9.1",
+    "parse-domain": "=1.0.0",
+    "request": "2.83.0",
+    "typescript": "2.5.3",
+    "underscore": "1.8.3",
+    "url-parse": "=1.1.7",
+    "word-count": "=0.2.2"
   },
   "devDependencies": {
-    "eslintrc": "JakeSidSmith/eslintrc.git#v0.0.2"
-  },
-  "dependencies": {
-    "cheerio": "=0.22.0",
-    "js-yaml": "=3.7.0",
-    "parse-domain": "=1.0.0",
-    "superagent": "=3.7.0",
-    "underscore": "=1.8.3",
-    "url-parse": "=1.1.7",
-    "word-count": "=0.2.2",
-    "yargs": "=6.5.0"
+    "tslint": "5.8.0",
+    "tslint-eslint-rules": "4.1.1"
   }
 }

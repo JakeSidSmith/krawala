@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -e
+
+rm -rf dist/
+
+mkdir -p dist/
+
+tsc --project 'src/tsconfig.json'
+
+chmod +x 'dist/cli.js'
