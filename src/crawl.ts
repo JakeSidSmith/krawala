@@ -103,8 +103,8 @@ const crawlNode = (node: PartiallyCrawled) => {
   request(node.resolved, {...REQUEST_OPTIONS, timeout: options.timeout}, (error, response, body) => {
       progress.urlsCrawled.push(node.resolved);
 
-      const status = response.statusCode;
-      const contentType = response.headers['content-type'];
+      const status = (response ? response.statusCode : null) || null;
+      const contentType = (response ? response.headers['content-type'] : '') || '';
       const type = Array.isArray(contentType) ? `[${contentType.join(', ')}]` : contentType;
 
       if (!error && status && MATCHES_SUCCESS_STATUS.test(status.toString())) {
