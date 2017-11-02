@@ -21,7 +21,7 @@ const PROGRESS_LINES = 8;
 const PADDING = '                ';
 
 export const error = (message: string): void => {
-  if (typeof process === 'object' && typeof process.exit === 'function') {
+  if (typeof (process as any) === 'object' && typeof (process as any).exit === 'function') {
     console.error(message); // tslint:disable-line no-console
     process.exit(1);
   } else {
@@ -98,7 +98,7 @@ ${currentTask}
 };
 
 export const updateProgress = (options: Options, progress: Progress, currentTask: string) => {
-  if (typeof process === 'object') {
+  if (typeof (process as any) === 'object') {
     if (progress.progressMade) {
       clearProgress();
     }
@@ -193,7 +193,7 @@ export const getOutput = (options: Options, pages: {[index: string]: any} | any[
 };
 
 export const complete = (options: Options, pages: Output) => {
-  if (typeof process === 'object' && typeof process.stdout !== 'undefined') {
+  if (typeof (process as any) === 'object' && typeof (process.stdout as any) !== 'undefined') {
     process.stdout.write(getOutput(options, pages));
   } else if (typeof options.callback === 'function') {
     options.callback(getOutput(options, pages));
