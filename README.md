@@ -2,8 +2,6 @@
 
 **Simple javascript web-crawler with command line interface**
 
-Placeholder
-
 ## Usage
 
 ```shell
