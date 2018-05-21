@@ -2,6 +2,14 @@
 
 **Simple javascript web-crawler with command line interface**
 
+## Install
+
+Run the following to install as a global CLI
+
+```shell
+npm i krawala -g
+```
+
 ## Usage
 
 ```shell
