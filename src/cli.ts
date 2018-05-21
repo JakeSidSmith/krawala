@@ -26,6 +26,7 @@ collect(
         usage: 'krawala <command> [options]',
         examples: [
           'krawala crawl -u http://domain.com -d 100',
+          'krawala crawl --help',
         ],
       },
       Required( // Swap for RequireAny when more sub-commands added
