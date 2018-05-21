@@ -1,13 +1,13 @@
 {
   "name": "krawala",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Simple javascript web-crawler with command line interface",
   "main": "dist/index.js",
   "bin": {
     "krawala": "dist/cli.js"
   },
   "scripts": {
-    "prepublish": "./scripts/dist",
+    "prepare": "./scripts/dist",
     "dist": "./scripts/dist",
     "lint": "tslint --project tsconfig.json '@(src|tests|types|docs)/**/*.@(ts|tsx)'",
     "test": "npm run lint"
@@ -40,7 +40,7 @@
     "jargs": "0.3.3",
     "js-yaml": "=3.9.1",
     "parse-domain": "=1.0.0",
-    "request": "2.83.0",
+    "request": "2.87.0",
     "typescript": "2.5.3",
     "underscore": "1.8.3",
     "url-parse": "=1.4.0",
