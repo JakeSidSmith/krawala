@@ -42,7 +42,7 @@
     "parse-domain": "=1.0.0",
     "request": "2.87.0",
     "typescript": "2.5.3",
-    "underscore": "1.8.3",
+    "underscore": "1.12.1",
     "url-parse": "=1.4.0",
     "word-count": "=0.2.2"
   },
