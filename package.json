@@ -36,7 +36,7 @@
     "@types/superagent": "3.5.6",
     "@types/underscore": "1.8.3",
     "@types/url-parse": "1.1.0",
-    "cheerio": "=0.22.0",
+    "cheerio": "1.0.0",
     "jargs": "0.3.3",
     "js-yaml": "=3.9.1",
     "parse-domain": "=1.0.0",
